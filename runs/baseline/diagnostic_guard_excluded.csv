@@ -1,0 +1,7 @@
+filename,video_id,frame_number,finding_category,finding_class,x1,y1,x2,y2,x3,y3,x4,y4,label,path,target
+8ebf0e483cac48d6_1214.jpg,8ebf0e483cac48d6,1214,Luminal,Blood - hematin,254.0,11.0,307.0,11.0,307.0,45.0,254.0,45.0,blood_hematin,D:\dataset_quazir\labelled_images\blood_hematin\8ebf0e483cac48d6_1214.jpg,3
+8ebf0e483cac48d6_1215.jpg,8ebf0e483cac48d6,1215,Luminal,Blood - hematin,232.0,18.0,283.0,18.0,283.0,55.0,232.0,55.0,blood_hematin,D:\dataset_quazir\labelled_images\blood_hematin\8ebf0e483cac48d6_1215.jpg,3
+8ebf0e483cac48d6_1216.jpg,8ebf0e483cac48d6,1216,Luminal,Blood - hematin,197.0,36.0,258.0,36.0,258.0,91.0,197.0,91.0,blood_hematin,D:\dataset_quazir\labelled_images\blood_hematin\8ebf0e483cac48d6_1216.jpg,3
+131368cc17e44240_28999.jpg,131368cc17e44240,28999,Luminal,Polyp,19.0,9.0,313.0,9.0,313.0,287.0,19.0,287.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_28999.jpg,10
+131368cc17e44240_29000.jpg,131368cc17e44240,29000,Luminal,Polyp,39.0,9.0,311.0,9.0,311.0,282.0,39.0,282.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29000.jpg,10
+131368cc17e44240_29001.jpg,131368cc17e44240,29001,Luminal,Polyp,39.0,2.0,311.0,2.0,311.0,274.0,39.0,274.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29001.jpg,10

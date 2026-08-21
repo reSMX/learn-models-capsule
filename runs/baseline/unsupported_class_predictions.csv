@@ -1,0 +1,6 @@
+filename,video_id,frame_number,label,predicted_label,confidence,correct
+d626f4f4a5ac4785_7703.jpg,d626f4f4a5ac4785,7703,pylorus,polyp,0.515625,False
+48579eec79784294_29753.jpg,48579eec79784294,29753,ileocecal_valve,polyp,0.407958984375,False
+04a78ef00c5245e0_11863.jpg,04a78ef00c5245e0,11863,pylorus,ampulla_of_vater,0.36962890625,False
+04a78ef00c5245e0_11864.jpg,04a78ef00c5245e0,11864,pylorus,ampulla_of_vater,0.55322265625,False
+04a78ef00c5245e0_11626.jpg,04a78ef00c5245e0,11626,angiectasia,blood_hematin,0.307861328125,False

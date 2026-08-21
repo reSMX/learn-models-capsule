@@ -1,0 +1,4 @@
+class,validation_positives,predicted_count,false_positive_rate,sensitivity_status
+ampulla_of_vater,0,2,0.00018712574850299402,not_estimable_no_positive_video
+blood_hematin,0,1,9.356287425149701e-05,not_estimable_no_positive_video
+polyp,0,2,0.00018712574850299402,not_estimable_no_positive_video

@@ -1,0 +1,162 @@
+{
+  "overall_counts": {
+    "ampulla_of_vater": 9,
+    "angiectasia": 866,
+    "blood_fresh": 446,
+    "blood_hematin": 12,
+    "erosion": 498,
+    "erythema": 159,
+    "foreign_body": 776,
+    "ileocecal_valve": 4189,
+    "lymphangiectasia": 592,
+    "normal_clean_mucosa": 34338,
+    "polyp": 55,
+    "pylorus": 1520,
+    "reduced_mucosal_view": 2906,
+    "ulcer": 854
+  },
+  "train_counts": {
+    "ampulla_of_vater": 6,
+    "angiectasia": 758,
+    "blood_fresh": 424,
+    "blood_hematin": 6,
+    "erosion": 396,
+    "erythema": 27,
+    "foreign_body": 759,
+    "ileocecal_valve": 3235,
+    "lymphangiectasia": 518,
+    "normal_clean_mucosa": 27283,
+    "polyp": 38,
+    "pylorus": 1212,
+    "reduced_mucosal_view": 1572,
+    "ulcer": 272
+  },
+  "validation_counts": {
+    "ampulla_of_vater": 0,
+    "angiectasia": 108,
+    "blood_fresh": 22,
+    "blood_hematin": 0,
+    "erosion": 102,
+    "erythema": 132,
+    "foreign_body": 17,
+    "ileocecal_valve": 954,
+    "lymphangiectasia": 74,
+    "normal_clean_mucosa": 7055,
+    "polyp": 0,
+    "pylorus": 308,
+    "reduced_mucosal_view": 1334,
+    "ulcer": 582
+  },
+  "diagnostic_only_counts": {
+    "ampulla_of_vater": 3,
+    "angiectasia": 0,
+    "blood_fresh": 0,
+    "blood_hematin": 3,
+    "erosion": 0,
+    "erythema": 0,
+    "foreign_body": 0,
+    "ileocecal_valve": 0,
+    "lymphangiectasia": 0,
+    "normal_clean_mucosa": 0,
+    "polyp": 14,
+    "pylorus": 0,
+    "reduced_mucosal_view": 0,
+    "ulcer": 0
+  },
+  "overall_max_to_min_ratio": 3815.3333333333335,
+  "train_max_to_min_ratio": 4547.166666666667,
+  "warning_threshold": 10.0,
+  "severe_imbalance": true,
+  "sampler": {
+    "strategy": "capped_power_weighting",
+    "power": 0.5,
+    "max_per_sample_multiplier": 20.0,
+    "note": "power=0.5 approximates square-root rebalancing; the cap prevents a few rare frames from being repeated hundreds of times per epoch.",
+    "per_class_expected_sampling": {
+      "normal_clean_mucosa": {
+        "train_frames": 27283,
+        "per_sample_weight_multiplier": 1.0,
+        "expected_samples_per_epoch": 13683.700184929827,
+        "expected_repeats_per_frame": 0.5015467575021012
+      },
+      "ileocecal_valve": {
+        "train_frames": 3235,
+        "per_sample_weight_multiplier": 2.904082294319376,
+        "expected_samples_per_epoch": 4711.884443390696,
+        "expected_repeats_per_frame": 1.4565330582351457
+      },
+      "reduced_mucosal_view": {
+        "train_frames": 1572,
+        "per_sample_weight_multiplier": 4.1660050365279915,
+        "expected_samples_per_epoch": 3284.609611594234,
+        "expected_repeats_per_frame": 2.089446317808037
+      },
+      "pylorus": {
+        "train_frames": 1212,
+        "per_sample_weight_multiplier": 4.744546982864356,
+        "expected_samples_per_epoch": 2884.0899319472583,
+        "expected_repeats_per_frame": 2.379612155071995
+      },
+      "foreign_body": {
+        "train_frames": 759,
+        "per_sample_weight_multiplier": 5.995496772968625,
+        "expected_samples_per_epoch": 2282.329672267415,
+        "expected_repeats_per_frame": 3.0070219660967257
+      },
+      "angiectasia": {
+        "train_frames": 758,
+        "per_sample_weight_multiplier": 5.999450282645186,
+        "expected_samples_per_epoch": 2280.825665730264,
+        "expected_repeats_per_frame": 3.0090048360557575
+      },
+      "lymphangiectasia": {
+        "train_frames": 518,
+        "per_sample_weight_multiplier": 7.25740202619947,
+        "expected_samples_per_epoch": 1885.4819032390933,
+        "expected_repeats_per_frame": 3.6399264541295233
+      },
+      "blood_fresh": {
+        "train_frames": 424,
+        "per_sample_weight_multiplier": 8.021639365691252,
+        "expected_samples_per_epoch": 1705.8483386145915,
+        "expected_repeats_per_frame": 4.0232272137136595
+      },
+      "erosion": {
+        "train_frames": 396,
+        "per_sample_weight_multiplier": 8.30038942739825,
+        "expected_samples_per_epoch": 1648.5612277132605,
+        "expected_repeats_per_frame": 4.163033403316314
+      },
+      "ulcer": {
+        "train_frames": 272,
+        "per_sample_weight_multiplier": 10.015245731324995,
+        "expected_samples_per_epoch": 1366.2870140201246,
+        "expected_repeats_per_frame": 5.0231140221328126
+      },
+      "polyp": {
+        "train_frames": 38,
+        "per_sample_weight_multiplier": 20.0,
+        "expected_samples_per_epoch": 381.1755357015969,
+        "expected_repeats_per_frame": 10.030935150042025
+      },
+      "erythema": {
+        "train_frames": 27,
+        "per_sample_weight_multiplier": 20.0,
+        "expected_samples_per_epoch": 270.83524905113467,
+        "expected_repeats_per_frame": 10.030935150042025
+      },
+      "ampulla_of_vater": {
+        "train_frames": 6,
+        "per_sample_weight_multiplier": 20.0,
+        "expected_samples_per_epoch": 60.18561090025214,
+        "expected_repeats_per_frame": 10.030935150042025
+      },
+      "blood_hematin": {
+        "train_frames": 6,
+        "per_sample_weight_multiplier": 20.0,
+        "expected_samples_per_epoch": 60.18561090025214,
+        "expected_repeats_per_frame": 10.030935150042025
+      }
+    }
+  }
+}

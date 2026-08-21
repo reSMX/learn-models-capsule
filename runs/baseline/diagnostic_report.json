@@ -1,0 +1,67 @@
+{
+  "evaluation_scope": "diagnostic_only_temporal_holdout_from_same_video",
+  "checkpoint_epoch": 5,
+  "loss": 0.3470741033554077,
+  "overall_frame_accuracy": 1.0,
+  "macro_recall": 1.0,
+  "per_class": {
+    "ampulla_of_vater": {
+      "status": "diagnostic_only_same_video",
+      "positive_frames": 3,
+      "correct_frames": 3,
+      "recall": 1.0,
+      "predicted_distribution": {
+        "ampulla_of_vater": 3
+      },
+      "split": {
+        "status": "diagnostic_only",
+        "video_id": "eb0203196e284797",
+        "diagnostic_positive_frames": 3,
+        "diagnostic_frame_start": 1175,
+        "diagnostic_frame_end": 1177,
+        "guard_gap_frames": 3,
+        "excluded_rows_including_diagnostic": 3,
+        "remaining_train_positive_frames": 6
+      }
+    },
+    "blood_hematin": {
+      "status": "diagnostic_only_same_video",
+      "positive_frames": 3,
+      "correct_frames": 3,
+      "recall": 1.0,
+      "predicted_distribution": {
+        "blood_hematin": 3
+      },
+      "split": {
+        "status": "diagnostic_only",
+        "video_id": "8ebf0e483cac48d6",
+        "diagnostic_positive_frames": 3,
+        "diagnostic_frame_start": 1217,
+        "diagnostic_frame_end": 1219,
+        "guard_gap_frames": 3,
+        "excluded_rows_including_diagnostic": 6,
+        "remaining_train_positive_frames": 6
+      }
+    },
+    "polyp": {
+      "status": "diagnostic_only_same_video",
+      "positive_frames": 14,
+      "correct_frames": 14,
+      "recall": 1.0,
+      "predicted_distribution": {
+        "polyp": 14
+      },
+      "split": {
+        "status": "diagnostic_only",
+        "video_id": "131368cc17e44240",
+        "diagnostic_positive_frames": 14,
+        "diagnostic_frame_start": 29002,
+        "diagnostic_frame_end": 29015,
+        "guard_gap_frames": 3,
+        "excluded_rows_including_diagnostic": 17,
+        "remaining_train_positive_frames": 38
+      }
+    }
+  },
+  "warning": "This probe only checks recognition within the source video. It must not be used as evidence of generalization to a new patient or video."
+}
