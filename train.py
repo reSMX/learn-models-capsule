@@ -1,4 +1,4 @@
-"""First Kvasir-Capsule baseline: frame classifier with video-level split."""
+"""Regularized Kvasir-Capsule frame classifier with video-level validation."""
 
 from __future__ import annotations
 
@@ -174,6 +174,31 @@ def imbalance_ratio(counts: dict[str, int]) -> float | None:
     return float(max(nonzero) / min(nonzero))
 
 
+def cap_correlated_training_frames(
+    frame: pd.DataFrame, max_frames_per_video_class: int
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Keep evenly spaced frames so long near-duplicate sequences cannot dominate training."""
+    if max_frames_per_video_class == 0:
+        return frame.copy(), frame.iloc[0:0].copy()
+
+    ordered = frame.copy()
+    ordered["_frame_order"] = pd.to_numeric(ordered.frame_number, errors="coerce")
+    keep_indices: list[int] = []
+    for _, group in ordered.sort_values(
+        ["video_id", "label", "_frame_order", "filename"], na_position="last"
+    ).groupby(["video_id", "label"], sort=False):
+        if len(group) <= max_frames_per_video_class:
+            keep_indices.extend(group.index.tolist())
+            continue
+        positions = np.linspace(
+            0, len(group) - 1, num=max_frames_per_video_class, dtype=int
+        )
+        keep_indices.extend(group.iloc[positions].index.tolist())
+
+    keep_mask = frame.index.isin(keep_indices)
+    return frame.loc[keep_mask].copy(), frame.loc[~keep_mask].copy()
+
+
 def save_class_distribution(
     train_df: pd.DataFrame, val_df: pd.DataFrame, diagnostic_df: pd.DataFrame, output: Path
 ) -> None:
@@ -252,13 +277,28 @@ def build_loaders(
     workers,
     sampler_power,
     sampler_max_multiplier,
+    random_erasing_probability,
 ):
     weights = EfficientNet_B0_Weights.DEFAULT
     mean, std = weights.transforms().mean, weights.transforms().std
     train_tf = v2.Compose([
-        v2.ToImage(), v2.RandomResizedCrop((224, 224), scale=(0.75, 1.0)),
-        v2.RandomHorizontalFlip(), v2.RandomRotation(10), v2.ColorJitter(0.15, 0.15, 0.1, 0.03),
-        v2.ToDtype(torch.float32, scale=True), v2.Normalize(mean, std),
+        v2.ToImage(),
+        v2.RandomResizedCrop(
+            (224, 224), scale=(0.65, 1.0), ratio=(0.85, 1.15), antialias=True
+        ),
+        v2.RandomHorizontalFlip(),
+        v2.RandomVerticalFlip(),
+        v2.RandomRotation(20),
+        v2.ColorJitter(0.2, 0.2, 0.12, 0.04),
+        v2.RandomApply([v2.GaussianBlur(kernel_size=3, sigma=(0.1, 1.5))], p=0.15),
+        v2.ToDtype(torch.float32, scale=True),
+        v2.Normalize(mean, std),
+        v2.RandomErasing(
+            p=random_erasing_probability,
+            scale=(0.02, 0.12),
+            ratio=(0.5, 2.0),
+            value="random",
+        ),
     ])
     val_tf = v2.Compose([
         v2.ToImage(), v2.Resize(256), v2.CenterCrop(224),
@@ -299,10 +339,12 @@ def build_loaders(
 def run_epoch(model, loader, loss_fn, device, optimizer=None, scaler=None, metric_labels=None):
     training = optimizer is not None
     model.train(training)
-    if training and hasattr(model, "features") and not any(
-        parameter.requires_grad for parameter in model.features.parameters()
-    ):
-        model.features.eval()
+    if training and hasattr(model, "features"):
+        # Frozen BatchNorm layers must not update running statistics. This matters both while
+        # the whole backbone is frozen and when only its final blocks are fine-tuned.
+        for block in model.features:
+            if not any(parameter.requires_grad for parameter in block.parameters()):
+                block.eval()
     total_loss, truth, predicted, confidence = 0.0, [], [], []
     context = torch.enable_grad if training else torch.no_grad
     with context():
@@ -479,6 +521,22 @@ def save_diagnostic_outputs(
     predictions.to_csv(output / "diagnostic_predictions.csv", index=False)
 
 
+def set_trainable_backbone_blocks(model: nn.Module, trainable_blocks: int) -> int:
+    """Freeze the backbone, then enable only its final N feature blocks."""
+    blocks = list(model.features.children())
+    if not 0 <= trainable_blocks <= len(blocks):
+        raise ValueError(
+            f"trainable-backbone-blocks must be between 0 and {len(blocks)}"
+        )
+    for parameter in model.features.parameters():
+        parameter.requires_grad = False
+    if trainable_blocks:
+        for block in blocks[-trainable_blocks:]:
+            for parameter in block.parameters():
+                parameter.requires_grad = True
+    return len(blocks)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -491,7 +549,7 @@ def main() -> None:
         default=Path(r"D:\dataset_quazir\metadata.csv"),
         help="Kvasir-Capsule metadata.csv (default: D:\\dataset_quazir\\metadata.csv)",
     )
-    parser.add_argument("--output", type=Path, default=Path("runs/baseline"))
+    parser.add_argument("--output", type=Path, default=Path("runs/regularized_v2"))
     parser.add_argument("--epochs", type=int, default=15)
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument(
@@ -499,12 +557,25 @@ def main() -> None:
         help="DataLoader processes; keep 0 on Windows with 16 GB RAM",
     )
     parser.add_argument("--lr", type=float, default=3e-4)
-    parser.add_argument("--weight-decay", type=float, default=1e-3)
+    parser.add_argument("--weight-decay", type=float, default=1e-2)
     parser.add_argument("--sampler-power", type=float, default=0.5)
-    parser.add_argument("--sampler-max-multiplier", type=float, default=20.0)
+    parser.add_argument("--sampler-max-multiplier", type=float, default=10.0)
     parser.add_argument("--val-size", type=float, default=0.2)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--freeze-backbone-epochs", type=int, default=2)
+    parser.add_argument("--trainable-backbone-blocks", type=int, default=3)
+    parser.add_argument("--backbone-lr-multiplier", type=float, default=0.1)
+    parser.add_argument("--dropout", type=float, default=0.4)
+    parser.add_argument("--label-smoothing", type=float, default=0.1)
+    parser.add_argument("--random-erasing-probability", type=float, default=0.2)
+    parser.add_argument(
+        "--max-frames-per-video-class",
+        type=int,
+        default=500,
+        help=(
+            "Evenly spaced training-frame cap for each (video, class); 0 disables it"
+        ),
+    )
     parser.add_argument("--early-stopping-patience", type=int, default=4)
     parser.add_argument("--early-stopping-min-delta", type=float, default=1e-4)
     parser.add_argument("--imbalance-warning-ratio", type=float, default=10.0)
@@ -531,6 +602,18 @@ def main() -> None:
         raise ValueError("sampler-power must be between 0 and 1")
     if args.sampler_max_multiplier < 1:
         raise ValueError("sampler-max-multiplier must be at least 1")
+    if args.trainable_backbone_blocks < 0:
+        raise ValueError("trainable-backbone-blocks cannot be negative")
+    if not 0 < args.backbone_lr_multiplier <= 1:
+        raise ValueError("backbone-lr-multiplier must be in (0, 1]")
+    if not 0 <= args.dropout < 1:
+        raise ValueError("dropout must be in [0, 1)")
+    if not 0 <= args.label_smoothing < 1:
+        raise ValueError("label-smoothing must be in [0, 1)")
+    if not 0 <= args.random_erasing_probability <= 1:
+        raise ValueError("random-erasing-probability must be in [0, 1]")
+    if args.max_frames_per_video_class < 0:
+        raise ValueError("max-frames-per-video-class cannot be negative")
     if not 0 < args.diagnostic_fraction < 1:
         raise ValueError("diagnostic-fraction must be between 0 and 1")
     if args.diagnostic_gap_frames < 0:
@@ -632,10 +715,18 @@ def main() -> None:
             for name in diagnostic_classes
         }
 
+    train_images_before_temporal_cap = len(train_df)
+    train_df, temporal_cap_excluded_df = cap_correlated_training_frames(
+        train_df, args.max_frames_per_video_class
+    )
+
     train_df.to_csv(args.output / "train_split.csv", index=False)
     val_df.to_csv(args.output / "val_split.csv", index=False)
     diagnostic_df.to_csv(args.output / "diagnostic_split.csv", index=False)
     diagnostic_guard_df.to_csv(args.output / "diagnostic_guard_excluded.csv", index=False)
+    temporal_cap_excluded_df.to_csv(
+        args.output / "train_temporal_cap_excluded.csv", index=False
+    )
     (args.output / "classes.json").write_text(json.dumps(class_to_idx, indent=2), encoding="utf-8")
 
     overall_counts = count_by_class(metadata, classes)
@@ -659,7 +750,11 @@ def main() -> None:
         for name in classes
     }
     split_summary = {
-        "train_images": len(train_df), "val_images": len(val_df),
+        "train_images": len(train_df),
+        "train_images_before_temporal_cap": train_images_before_temporal_cap,
+        "train_images_excluded_by_temporal_cap": len(temporal_cap_excluded_df),
+        "max_frames_per_video_class": int(args.max_frames_per_video_class),
+        "val_images": len(val_df),
         "diagnostic_images": len(diagnostic_df),
         "diagnostic_guard_excluded_rows": len(diagnostic_guard_df),
         "train_videos": int(train_df.video_id.nunique()), "val_videos": int(val_df.video_id.nunique()),
@@ -711,6 +806,7 @@ def main() -> None:
         args.workers,
         args.sampler_power,
         args.sampler_max_multiplier,
+        args.random_erasing_probability,
     )
     names_by_target = {target: name for name, target in class_to_idx.items()}
     class_balance["sampler"]["per_class_expected_sampling"] = {
@@ -728,16 +824,61 @@ def main() -> None:
 
     pretrained = None if args.no_pretrained else EfficientNet_B0_Weights.DEFAULT
     model = efficientnet_b0(weights=pretrained)
+    model.classifier[0] = nn.Dropout(p=args.dropout, inplace=True)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, len(classes))
     freeze_backbone_epochs = 0 if args.no_pretrained else args.freeze_backbone_epochs
-    if freeze_backbone_epochs > 0:
-        for parameter in model.features.parameters():
-            parameter.requires_grad = False
+    total_backbone_blocks = len(list(model.features.children()))
+    if args.trainable_backbone_blocks > total_backbone_blocks:
+        raise ValueError(
+            f"trainable-backbone-blocks cannot exceed {total_backbone_blocks} for EfficientNet-B0"
+        )
+    if args.no_pretrained:
+        trainable_backbone_blocks = total_backbone_blocks
+    elif freeze_backbone_epochs > 0:
+        trainable_backbone_blocks = 0
+    else:
+        trainable_backbone_blocks = args.trainable_backbone_blocks
+    set_trainable_backbone_blocks(model, trainable_backbone_blocks)
     model.to(device)
-    loss_fn = nn.CrossEntropyLoss(label_smoothing=0.05)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    loss_fn = nn.CrossEntropyLoss(label_smoothing=args.label_smoothing)
+    effective_backbone_lr_multiplier = (
+        1.0 if args.no_pretrained else args.backbone_lr_multiplier
+    )
+    optimizer = torch.optim.AdamW(
+        [
+            {
+                "params": model.features.parameters(),
+                "lr": args.lr * effective_backbone_lr_multiplier,
+            },
+            {"params": model.classifier.parameters(), "lr": args.lr},
+        ],
+        weight_decay=args.weight_decay,
+    )
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
     scaler = torch.amp.GradScaler("cuda", enabled=device.type == "cuda")
+
+    training_config = {
+        "batch_size": int(args.batch_size),
+        "epochs": int(args.epochs),
+        "classifier_learning_rate": float(args.lr),
+        "backbone_learning_rate": float(args.lr * effective_backbone_lr_multiplier),
+        "backbone_lr_multiplier": float(effective_backbone_lr_multiplier),
+        "freeze_backbone_epochs": int(freeze_backbone_epochs),
+        "trainable_backbone_blocks_after_freeze": int(
+            total_backbone_blocks if args.no_pretrained else args.trainable_backbone_blocks
+        ),
+        "total_backbone_blocks": int(total_backbone_blocks),
+        "dropout": float(args.dropout),
+        "label_smoothing": float(args.label_smoothing),
+        "weight_decay": float(args.weight_decay),
+        "random_erasing_probability": float(args.random_erasing_probability),
+        "max_frames_per_video_class": int(args.max_frames_per_video_class),
+        "sampler_power": float(args.sampler_power),
+        "sampler_max_multiplier": float(args.sampler_max_multiplier),
+    }
+    (args.output / "training_config.json").write_text(
+        json.dumps(training_config, indent=2), encoding="utf-8"
+    )
 
     supported_targets = sorted(int(value) for value in val_df.target.unique())
     unsupported_names = [
@@ -754,9 +895,11 @@ def main() -> None:
     history = []
     for epoch in range(1, args.epochs + 1):
         if epoch == freeze_backbone_epochs + 1 and freeze_backbone_epochs > 0:
-            for parameter in model.features.parameters():
-                parameter.requires_grad = True
-            print(f"Epoch {epoch}: backbone unfrozen")
+            set_trainable_backbone_blocks(model, args.trainable_backbone_blocks)
+            print(
+                f"Epoch {epoch}: unfroze final {args.trainable_backbone_blocks}/"
+                f"{total_backbone_blocks} backbone blocks"
+            )
 
         train_loss, train_f1, _, _, _ = run_epoch(
             model,
@@ -770,11 +913,13 @@ def main() -> None:
         val_loss, val_f1, truth, pred, confidence = run_epoch(
             model, val_loader, loss_fn, device, metric_labels=supported_targets
         )
-        current_lr = optimizer.param_groups[0]["lr"]
+        backbone_lr = optimizer.param_groups[0]["lr"]
+        classifier_lr = optimizer.param_groups[1]["lr"]
         scheduler.step()
         row = {
             "epoch": epoch,
-            "learning_rate": current_lr,
+            "learning_rate": classifier_lr,
+            "backbone_learning_rate": backbone_lr,
             "train_loss": train_loss,
             "train_macro_f1": train_f1,
             "val_loss": val_loss,
@@ -793,6 +938,7 @@ def main() -> None:
                     "epoch": epoch,
                     "val_supported_macro_f1": val_f1,
                     "unsupported_validation_classes": unsupported_names,
+                    "training_config": training_config,
                 },
                 args.output / "best.pt",
             )

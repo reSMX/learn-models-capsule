@@ -1,0 +1,19 @@
+filename,video_id,frame_number,finding_category,finding_class,x1,y1,x2,y2,x3,y3,x4,y4,label,path
+eb0203196e284797_1125.jpg,eb0203196e284797,1125,Anatomy,Pylorus,,,,,,,,,pylorus,D:\dataset_quazir\labelled_images\pylorus\eb0203196e284797_1125.jpg
+eb0203196e284797_1126.jpg,eb0203196e284797,1126,Anatomy,Pylorus,,,,,,,,,pylorus,D:\dataset_quazir\labelled_images\pylorus\eb0203196e284797_1126.jpg
+eb0203196e284797_1130.jpg,eb0203196e284797,1130,Anatomy,Pylorus,,,,,,,,,pylorus,D:\dataset_quazir\labelled_images\pylorus\eb0203196e284797_1130.jpg
+eb0203196e284797_1131.jpg,eb0203196e284797,1131,Anatomy,Pylorus,,,,,,,,,pylorus,D:\dataset_quazir\labelled_images\pylorus\eb0203196e284797_1131.jpg
+eb0203196e284797_1135.jpg,eb0203196e284797,1135,Anatomy,Pylorus,,,,,,,,,pylorus,D:\dataset_quazir\labelled_images\pylorus\eb0203196e284797_1135.jpg
+eb0203196e284797_1136.jpg,eb0203196e284797,1136,Anatomy,Pylorus,,,,,,,,,pylorus,D:\dataset_quazir\labelled_images\pylorus\eb0203196e284797_1136.jpg
+eb0203196e284797_1137.jpg,eb0203196e284797,1137,Anatomy,Pylorus,,,,,,,,,pylorus,D:\dataset_quazir\labelled_images\pylorus\eb0203196e284797_1137.jpg
+eb0203196e284797_1157.jpg,eb0203196e284797,1157,Anatomy,Pylorus,,,,,,,,,pylorus,D:\dataset_quazir\labelled_images\pylorus\eb0203196e284797_1157.jpg
+eb0203196e284797_1125.jpg,eb0203196e284797,1125,Luminal,Erosion,21.0,222.0,55.0,222.0,55.0,267.0,21.0,267.0,erosion,D:\dataset_quazir\labelled_images\erosion\eb0203196e284797_1125.jpg
+eb0203196e284797_1126.jpg,eb0203196e284797,1126,Luminal,Erosion,21.0,222.0,56.0,222.0,56.0,268.0,21.0,268.0,erosion,D:\dataset_quazir\labelled_images\erosion\eb0203196e284797_1126.jpg
+eb0203196e284797_1130.jpg,eb0203196e284797,1130,Luminal,Erosion,41.0,281.0,79.0,281.0,79.0,318.0,41.0,318.0,erosion,D:\dataset_quazir\labelled_images\erosion\eb0203196e284797_1130.jpg
+eb0203196e284797_1131.jpg,eb0203196e284797,1131,Luminal,Erosion,42.0,294.0,73.0,294.0,73.0,326.0,42.0,326.0,erosion,D:\dataset_quazir\labelled_images\erosion\eb0203196e284797_1131.jpg
+eb0203196e284797_1135.jpg,eb0203196e284797,1135,Luminal,Erosion,45.0,214.0,94.0,214.0,94.0,268.0,45.0,268.0,erosion,D:\dataset_quazir\labelled_images\erosion\eb0203196e284797_1135.jpg
+eb0203196e284797_1136.jpg,eb0203196e284797,1136,Luminal,Erosion,95.0,123.0,123.0,123.0,123.0,175.0,95.0,175.0,erosion,D:\dataset_quazir\labelled_images\erosion\eb0203196e284797_1136.jpg
+eb0203196e284797_1137.jpg,eb0203196e284797,1137,Luminal,Erosion,117.0,101.0,147.0,101.0,147.0,138.0,117.0,138.0,erosion,D:\dataset_quazir\labelled_images\erosion\eb0203196e284797_1137.jpg
+eb0203196e284797_1157.jpg,eb0203196e284797,1157,Anatomy,Ampulla of Vater,238.0,196.0,327.0,196.0,327.0,289.0,238.0,289.0,ampulla_of_vater,D:\dataset_quazir\labelled_images\ampulla_of_vater\eb0203196e284797_1157.jpg
+fb86bc87d3874cd7_3660.jpg,fb86bc87d3874cd7,3660,Anatomy,Pylorus,,,,,,,,,pylorus,D:\dataset_quazir\labelled_images\pylorus\fb86bc87d3874cd7_3660.jpg
+fb86bc87d3874cd7_3660.jpg,fb86bc87d3874cd7,3660,Luminal,Erosion,0.0,85.0,68.0,85.0,68.0,156.0,0.0,156.0,erosion,D:\dataset_quazir\labelled_images\erosion\fb86bc87d3874cd7_3660.jpg

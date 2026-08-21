@@ -1,0 +1,168 @@
+{
+  "train_images": 21699,
+  "train_images_before_temporal_cap": 36506,
+  "train_images_excluded_by_temporal_cap": 14807,
+  "max_frames_per_video_class": 500,
+  "val_images": 10688,
+  "diagnostic_images": 20,
+  "diagnostic_guard_excluded_rows": 6,
+  "train_videos": 34,
+  "val_videos": 9,
+  "classes_absent_from_validation": [
+    "ampulla_of_vater",
+    "blood_hematin",
+    "polyp"
+  ],
+  "single_video_classes": [
+    "ampulla_of_vater",
+    "blood_hematin",
+    "polyp"
+  ],
+  "class_coverage": {
+    "ampulla_of_vater": {
+      "source_videos": 1,
+      "all_frames": 9,
+      "train_frames": 6,
+      "validation_frames": 0,
+      "diagnostic_frames": 3,
+      "validation_status": "sensitivity_not_estimable_no_positive_video"
+    },
+    "angiectasia": {
+      "source_videos": 6,
+      "all_frames": 866,
+      "train_frames": 606,
+      "validation_frames": 108,
+      "diagnostic_frames": 0,
+      "validation_status": "evaluated_on_unseen_videos"
+    },
+    "blood_fresh": {
+      "source_videos": 2,
+      "all_frames": 446,
+      "train_frames": 424,
+      "validation_frames": 22,
+      "diagnostic_frames": 0,
+      "validation_status": "evaluated_on_unseen_videos"
+    },
+    "blood_hematin": {
+      "source_videos": 1,
+      "all_frames": 12,
+      "train_frames": 6,
+      "validation_frames": 0,
+      "diagnostic_frames": 3,
+      "validation_status": "sensitivity_not_estimable_no_positive_video"
+    },
+    "erosion": {
+      "source_videos": 9,
+      "all_frames": 498,
+      "train_frames": 396,
+      "validation_frames": 102,
+      "diagnostic_frames": 0,
+      "validation_status": "evaluated_on_unseen_videos"
+    },
+    "erythema": {
+      "source_videos": 3,
+      "all_frames": 159,
+      "train_frames": 27,
+      "validation_frames": 132,
+      "diagnostic_frames": 0,
+      "validation_status": "evaluated_on_unseen_videos"
+    },
+    "foreign_body": {
+      "source_videos": 4,
+      "all_frames": 776,
+      "train_frames": 686,
+      "validation_frames": 17,
+      "diagnostic_frames": 0,
+      "validation_status": "evaluated_on_unseen_videos"
+    },
+    "ileocecal_valve": {
+      "source_videos": 34,
+      "all_frames": 4189,
+      "train_frames": 2474,
+      "validation_frames": 954,
+      "diagnostic_frames": 0,
+      "validation_status": "evaluated_on_unseen_videos"
+    },
+    "lymphangiectasia": {
+      "source_videos": 3,
+      "all_frames": 592,
+      "train_frames": 518,
+      "validation_frames": 74,
+      "diagnostic_frames": 0,
+      "validation_status": "evaluated_on_unseen_videos"
+    },
+    "normal_clean_mucosa": {
+      "source_videos": 37,
+      "all_frames": 34338,
+      "train_frames": 14056,
+      "validation_frames": 7055,
+      "diagnostic_frames": 0,
+      "validation_status": "evaluated_on_unseen_videos"
+    },
+    "polyp": {
+      "source_videos": 1,
+      "all_frames": 55,
+      "train_frames": 38,
+      "validation_frames": 0,
+      "diagnostic_frames": 14,
+      "validation_status": "sensitivity_not_estimable_no_positive_video"
+    },
+    "pylorus": {
+      "source_videos": 32,
+      "all_frames": 1520,
+      "train_frames": 1212,
+      "validation_frames": 308,
+      "diagnostic_frames": 0,
+      "validation_status": "evaluated_on_unseen_videos"
+    },
+    "reduced_mucosal_view": {
+      "source_videos": 7,
+      "all_frames": 2906,
+      "train_frames": 978,
+      "validation_frames": 1334,
+      "diagnostic_frames": 0,
+      "validation_status": "evaluated_on_unseen_videos"
+    },
+    "ulcer": {
+      "source_videos": 3,
+      "all_frames": 854,
+      "train_frames": 272,
+      "validation_frames": 582,
+      "diagnostic_frames": 0,
+      "validation_status": "evaluated_on_unseen_videos"
+    }
+  },
+  "diagnostic_split": {
+    "ampulla_of_vater": {
+      "status": "diagnostic_only",
+      "video_id": "eb0203196e284797",
+      "diagnostic_positive_frames": 3,
+      "diagnostic_frame_start": 1175,
+      "diagnostic_frame_end": 1177,
+      "guard_gap_frames": 3,
+      "excluded_rows_including_diagnostic": 3,
+      "remaining_train_positive_frames": 6
+    },
+    "blood_hematin": {
+      "status": "diagnostic_only",
+      "video_id": "8ebf0e483cac48d6",
+      "diagnostic_positive_frames": 3,
+      "diagnostic_frame_start": 1217,
+      "diagnostic_frame_end": 1219,
+      "guard_gap_frames": 3,
+      "excluded_rows_including_diagnostic": 6,
+      "remaining_train_positive_frames": 6
+    },
+    "polyp": {
+      "status": "diagnostic_only",
+      "video_id": "131368cc17e44240",
+      "diagnostic_positive_frames": 14,
+      "diagnostic_frame_start": 29002,
+      "diagnostic_frame_end": 29015,
+      "guard_gap_frames": 3,
+      "excluded_rows_including_diagnostic": 17,
+      "remaining_train_positive_frames": 38
+    }
+  },
+  "note": "Classes sourced from only one video cannot occur in both leak-free partitions. The temporal diagnostic holdout is same-video and is never used for model selection."
+}

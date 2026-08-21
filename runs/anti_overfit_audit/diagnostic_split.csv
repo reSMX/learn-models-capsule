@@ -1,0 +1,21 @@
+filename,video_id,frame_number,finding_category,finding_class,x1,y1,x2,y2,x3,y3,x4,y4,label,path,target
+eb0203196e284797_1175.jpg,eb0203196e284797,1175,Anatomy,Ampulla of Vater,18.0,53.0,89.0,53.0,89.0,107.0,18.0,107.0,ampulla_of_vater,D:\dataset_quazir\labelled_images\ampulla_of_vater\eb0203196e284797_1175.jpg,0
+eb0203196e284797_1176.jpg,eb0203196e284797,1176,Anatomy,Ampulla of Vater,71.0,92.0,166.0,92.0,166.0,164.0,71.0,164.0,ampulla_of_vater,D:\dataset_quazir\labelled_images\ampulla_of_vater\eb0203196e284797_1176.jpg,0
+eb0203196e284797_1177.jpg,eb0203196e284797,1177,Anatomy,Ampulla of Vater,266.0,161.0,331.0,161.0,331.0,217.0,266.0,217.0,ampulla_of_vater,D:\dataset_quazir\labelled_images\ampulla_of_vater\eb0203196e284797_1177.jpg,0
+8ebf0e483cac48d6_1217.jpg,8ebf0e483cac48d6,1217,Luminal,Blood - hematin,187.0,16.0,249.0,16.0,249.0,60.0,187.0,60.0,blood_hematin,D:\dataset_quazir\labelled_images\blood_hematin\8ebf0e483cac48d6_1217.jpg,3
+8ebf0e483cac48d6_1218.jpg,8ebf0e483cac48d6,1218,Luminal,Blood - hematin,199.0,33.0,257.0,33.0,257.0,83.0,199.0,83.0,blood_hematin,D:\dataset_quazir\labelled_images\blood_hematin\8ebf0e483cac48d6_1218.jpg,3
+8ebf0e483cac48d6_1219.jpg,8ebf0e483cac48d6,1219,Luminal,Blood - hematin,261.0,17.0,314.0,17.0,314.0,66.0,261.0,66.0,blood_hematin,D:\dataset_quazir\labelled_images\blood_hematin\8ebf0e483cac48d6_1219.jpg,3
+131368cc17e44240_29002.jpg,131368cc17e44240,29002,Luminal,Polyp,30.0,2.0,320.0,2.0,320.0,275.0,30.0,275.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29002.jpg,10
+131368cc17e44240_29003.jpg,131368cc17e44240,29003,Luminal,Polyp,55.0,2.0,321.0,2.0,321.0,275.0,55.0,275.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29003.jpg,10
+131368cc17e44240_29004.jpg,131368cc17e44240,29004,Luminal,Polyp,43.0,37.0,322.0,37.0,322.0,310.0,43.0,310.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29004.jpg,10
+131368cc17e44240_29005.jpg,131368cc17e44240,29005,Luminal,Polyp,47.0,64.0,331.0,64.0,331.0,311.0,47.0,311.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29005.jpg,10
+131368cc17e44240_29006.jpg,131368cc17e44240,29006,Luminal,Polyp,50.0,64.0,332.0,64.0,332.0,296.0,50.0,296.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29006.jpg,10
+131368cc17e44240_29007.jpg,131368cc17e44240,29007,Luminal,Polyp,71.0,64.0,333.0,64.0,333.0,323.0,71.0,323.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29007.jpg,10
+131368cc17e44240_29008.jpg,131368cc17e44240,29008,Luminal,Polyp,78.0,64.0,334.0,64.0,334.0,333.0,78.0,333.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29008.jpg,10
+131368cc17e44240_29009.jpg,131368cc17e44240,29009,Luminal,Polyp,78.0,47.0,335.0,47.0,335.0,334.0,78.0,334.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29009.jpg,10
+131368cc17e44240_29010.jpg,131368cc17e44240,29010,Luminal,Polyp,88.0,31.0,336.0,31.0,336.0,335.0,88.0,335.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29010.jpg,10
+131368cc17e44240_29011.jpg,131368cc17e44240,29011,Luminal,Polyp,100.0,31.0,337.0,31.0,337.0,336.0,100.0,336.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29011.jpg,10
+131368cc17e44240_29012.jpg,131368cc17e44240,29012,Luminal,Polyp,97.0,31.0,338.0,31.0,338.0,336.0,97.0,336.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29012.jpg,10
+131368cc17e44240_29013.jpg,131368cc17e44240,29013,Luminal,Polyp,8.0,22.0,339.0,22.0,339.0,336.0,8.0,336.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29013.jpg,10
+131368cc17e44240_29014.jpg,131368cc17e44240,29014,Luminal,Polyp,17.0,34.0,340.0,34.0,340.0,336.0,17.0,336.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29014.jpg,10
+131368cc17e44240_29015.jpg,131368cc17e44240,29015,Luminal,Polyp,18.0,34.0,341.0,34.0,341.0,336.0,18.0,336.0,polyp,D:\dataset_quazir\labelled_images\polyp\131368cc17e44240_29015.jpg,10
