@@ -1,0 +1,17 @@
+{
+  "batch_size": 16,
+  "epochs": 15,
+  "classifier_learning_rate": 0.0003,
+  "backbone_learning_rate": 2.9999999999999997e-05,
+  "backbone_lr_multiplier": 0.1,
+  "freeze_backbone_epochs": 2,
+  "trainable_backbone_blocks_after_freeze": 3,
+  "total_backbone_blocks": 9,
+  "dropout": 0.4,
+  "label_smoothing": 0.1,
+  "weight_decay": 0.01,
+  "random_erasing_probability": 0.2,
+  "max_frames_per_video_class": 500,
+  "sampler_power": 0.5,
+  "sampler_max_multiplier": 10.0
+}

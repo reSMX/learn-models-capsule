@@ -1,0 +1,15 @@
+,ampulla_of_vater,angiectasia,blood_fresh,blood_hematin,erosion,erythema,foreign_body,ileocecal_valve,lymphangiectasia,normal_clean_mucosa,polyp,pylorus,reduced_mucosal_view,ulcer
+ampulla_of_vater,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+angiectasia,0,0,0,0,0,0,0,0,0,0,0,100,6,2
+blood_fresh,0,0,0,0,0,0,0,0,0,0,0,21,1,0
+blood_hematin,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+erosion,0,2,0,0,16,0,1,27,6,29,0,21,0,0
+erythema,0,10,0,0,30,0,0,4,2,86,0,0,0,0
+foreign_body,0,0,0,0,0,0,5,0,0,0,0,12,0,0
+ileocecal_valve,0,1,36,0,20,6,31,481,14,285,0,6,73,1
+lymphangiectasia,0,0,0,0,1,0,0,0,11,45,0,17,0,0
+normal_clean_mucosa,0,14,0,0,253,0,63,271,212,6117,1,25,98,1
+polyp,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+pylorus,0,0,0,0,5,0,4,1,2,75,1,214,6,0
+reduced_mucosal_view,0,0,0,0,3,0,110,400,4,391,0,4,422,0
+ulcer,0,2,0,0,135,0,1,371,1,59,0,3,8,2

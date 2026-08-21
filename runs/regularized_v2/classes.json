@@ -1,0 +1,16 @@
+{
+  "ampulla_of_vater": 0,
+  "angiectasia": 1,
+  "blood_fresh": 2,
+  "blood_hematin": 3,
+  "erosion": 4,
+  "erythema": 5,
+  "foreign_body": 6,
+  "ileocecal_valve": 7,
+  "lymphangiectasia": 8,
+  "normal_clean_mucosa": 9,
+  "polyp": 10,
+  "pylorus": 11,
+  "reduced_mucosal_view": 12,
+  "ulcer": 13
+}

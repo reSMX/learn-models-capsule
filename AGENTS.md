@@ -14,10 +14,22 @@ Kvasir-Capsule 14-class frame classifier using EfficientNet-B0. `train.py` is th
 - Freeze the backbone for two epochs, then train only its final 3/9 blocks at `0.1x` the
   classifier learning rate. Frozen BatchNorm statistics stay frozen.
 - Exact duplicates and conflicting multi-label frames are audited and excluded from this single-label softmax task.
-- The previous run completed with early stopping at epoch 9. Its best checkpoint was epoch 5,
-  supported validation macro-F1 `0.2428336`; same-video diagnostic macro-recall `1.0` (not
-  cross-video evidence). It predates the anti-overfitting changes and remains in `runs/baseline`.
-  The new dry-run is in `runs/anti_overfit_audit`; the regularized model has not been trained yet.
+- The original run stopped at epoch 9. Its best checkpoint is still the project best: epoch 5,
+  supported validation macro-F1 `0.2428336`; artifacts are in `runs/baseline`.
+- The regularized run ended unexpectedly after epoch 7. Its best checkpoint is epoch 4,
+  supported validation macro-F1 `0.2219359`; artifacts are in `runs/regularized_v2`. It did not
+  reach final diagnostic evaluation, so no `diagnostic_report.json` is expected for that run.
+- `runs/anti_overfit_audit` is the completed dry-run for the regularized pipeline.
+
+## External data
+
+- Primary choice: Galar, mapping `papilla of Vater -> ampulla_of_vater`,
+  `hematin -> blood_hematin`, and `polyp -> polyp`.
+- Capsule Vision 2024 / SEE-AI / KID are secondary sources for `polyp`; exclude every row whose
+  source is Kvasir to avoid duplicates. Never map generic `bleeding` to `blood_hematin`.
+- Preserve source study/video IDs and split only by them. Galar is multi-label; ignore technical
+  and GI-section labels, but exclude frames with conflicting pathological targets for the current
+  single-label model. Full links and import rules are in `EXTERNAL_DATASETS.md`.
 
 ## Commands
 

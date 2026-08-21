@@ -1,0 +1,9 @@
+{
+  "raw_metadata_rows": 47248,
+  "exact_duplicate_rows_removed": 10,
+  "rows_without_extracted_image_removed": 0,
+  "ambiguous_multilabel_frames_removed": 9,
+  "ambiguous_multilabel_rows_removed": 18,
+  "usable_single_label_rows": 47220,
+  "multilabel_policy": "Frames with more than one correct class are exported for review and excluded, because duplicate rows with conflicting targets are invalid for softmax cross-entropy."
+}

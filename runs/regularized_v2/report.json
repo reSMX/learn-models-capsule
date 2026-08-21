@@ -1,0 +1,148 @@
+{
+  "evaluation_scope": "leak_free_video_level_validation",
+  "model_selection_metric": "supported_macro_f1",
+  "supported_classes": [
+    "angiectasia",
+    "blood_fresh",
+    "erosion",
+    "erythema",
+    "foreign_body",
+    "ileocecal_valve",
+    "lymphangiectasia",
+    "normal_clean_mucosa",
+    "pylorus",
+    "reduced_mucosal_view",
+    "ulcer"
+  ],
+  "unsupported_classes": [
+    "ampulla_of_vater",
+    "blood_hematin",
+    "polyp"
+  ],
+  "class_status": {
+    "ampulla_of_vater": "sensitivity_not_estimable_no_positive_video",
+    "angiectasia": "evaluated_on_unseen_videos",
+    "blood_fresh": "evaluated_on_unseen_videos",
+    "blood_hematin": "sensitivity_not_estimable_no_positive_video",
+    "erosion": "evaluated_on_unseen_videos",
+    "erythema": "evaluated_on_unseen_videos",
+    "foreign_body": "evaluated_on_unseen_videos",
+    "ileocecal_valve": "evaluated_on_unseen_videos",
+    "lymphangiectasia": "evaluated_on_unseen_videos",
+    "normal_clean_mucosa": "evaluated_on_unseen_videos",
+    "polyp": "sensitivity_not_estimable_no_positive_video",
+    "pylorus": "evaluated_on_unseen_videos",
+    "reduced_mucosal_view": "evaluated_on_unseen_videos",
+    "ulcer": "evaluated_on_unseen_videos"
+  },
+  "supported_classification_report": {
+    "angiectasia": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 108.0
+    },
+    "blood_fresh": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 22.0
+    },
+    "erosion": {
+      "precision": 0.03455723542116631,
+      "recall": 0.1568627450980392,
+      "f1-score": 0.05663716814159292,
+      "support": 102.0
+    },
+    "erythema": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 132.0
+    },
+    "foreign_body": {
+      "precision": 0.023255813953488372,
+      "recall": 0.29411764705882354,
+      "f1-score": 0.04310344827586207,
+      "support": 17.0
+    },
+    "ileocecal_valve": {
+      "precision": 0.3093247588424437,
+      "recall": 0.5041928721174004,
+      "f1-score": 0.38341968911917096,
+      "support": 954.0
+    },
+    "lymphangiectasia": {
+      "precision": 0.04365079365079365,
+      "recall": 0.14864864864864866,
+      "f1-score": 0.06748466257668712,
+      "support": 74.0
+    },
+    "normal_clean_mucosa": {
+      "precision": 0.8631296740510794,
+      "recall": 0.8670446491849751,
+      "f1-score": 0.8650827322868052,
+      "support": 7055.0
+    },
+    "pylorus": {
+      "precision": 0.5059101654846335,
+      "recall": 0.6948051948051948,
+      "f1-score": 0.585499316005472,
+      "support": 308.0
+    },
+    "reduced_mucosal_view": {
+      "precision": 0.6872964169381107,
+      "recall": 0.31634182908545727,
+      "f1-score": 0.433264887063655,
+      "support": 1334.0
+    },
+    "ulcer": {
+      "precision": 0.3333333333333333,
+      "recall": 0.003436426116838488,
+      "f1-score": 0.006802721088435374,
+      "support": 582.0
+    },
+    "micro avg": {
+      "precision": 0.6801422421860378,
+      "recall": 0.6800149700598802,
+      "f1-score": 0.6800786001684289,
+      "support": 10688.0
+    },
+    "macro avg": {
+      "precision": 0.25458710833409537,
+      "recall": 0.27140454655594337,
+      "f1-score": 0.22193587495978911,
+      "support": 10688.0
+    },
+    "weighted avg": {
+      "precision": 0.7165325380904838,
+      "recall": 0.6800149700598802,
+      "f1-score": 0.6776490462996798,
+      "support": 10688.0
+    }
+  },
+  "supported_macro_f1": 0.22193587495978911,
+  "supported_balanced_accuracy": 0.27140454655594337,
+  "overall_accuracy": 0.6800149700598802,
+  "unsupported_class_false_positives": {
+    "ampulla_of_vater": {
+      "validation_positives": 0,
+      "predicted_count": 0,
+      "false_positive_rate": 0.0,
+      "sensitivity_status": "not_estimable_no_positive_video"
+    },
+    "blood_hematin": {
+      "validation_positives": 0,
+      "predicted_count": 0,
+      "false_positive_rate": 0.0,
+      "sensitivity_status": "not_estimable_no_positive_video"
+    },
+    "polyp": {
+      "validation_positives": 0,
+      "predicted_count": 2,
+      "false_positive_rate": 0.00018712574850299402,
+      "sensitivity_status": "not_estimable_no_positive_video"
+    }
+  },
+  "note": "Unsupported classes have no positive video in validation. Their sensitivity is not estimable; only false positives on validation negatives are reported."
+}

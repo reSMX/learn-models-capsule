@@ -1,0 +1,3 @@
+filename,video_id,frame_number,label,predicted_label,confidence,correct
+d626f4f4a5ac4785_7705.jpg,d626f4f4a5ac4785,7705,pylorus,polyp,0.361083984375,False
+48579eec79784294_5903.jpg,48579eec79784294,5903,normal_clean_mucosa,polyp,0.26708984375,False
