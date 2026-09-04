@@ -628,7 +628,10 @@ def main() -> None:
     seed_everything(args.seed)
     args.output.mkdir(parents=True, exist_ok=True)
 
-    metadata = pd.read_csv(args.metadata, sep=";")
+    # Combined Kvasir + external metadata has intentionally mixed source-ID and
+    # demographic column types. Read the small table in one pass so pandas does
+    # not emit chunked-inference warnings for columns unused by training.
+    metadata = pd.read_csv(args.metadata, sep=";", low_memory=False)
     raw_metadata_rows = len(metadata)
     required = {"filename", "video_id", "frame_number", "finding_class"}
     if not required.issubset(metadata.columns):

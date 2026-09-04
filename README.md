@@ -12,7 +12,8 @@
 
 ## Запуск (PowerShell)
 
-Рекомендуется Python 3.11 или 3.12; Python 3.14 может пока не поддерживаться текущими сборками PyTorch.
+Для нового окружения рекомендуется Python 3.12. Текущее `.venv-win` проверено на Python 3.14.2
+с `torch 2.13.0+cu130`; CUDA, cuDNN и AMP работают.
 
 ```powershell
 py -3.12 -m venv .venv-win
@@ -76,7 +77,32 @@ TensorBoard и локальный веб-сервер не используют�
 выбран Galar. Ссылки, соответствие меток и правила безопасного объединения находятся в
 [`EXTERNAL_DATASETS.md`](EXTERNAL_DATASETS.md).
 
-Важно: `ampulla_of_vater`, `blood_hematin` и `polyp` встречаются каждый только в одном исходном видео. Честная video-level validation поэтому не может измерить их sensitivity. Pipeline отрезает для них последний временной блок, удаляет соседние guard-кадры из train и сохраняет результат как `diagnostic_only`; этот результат показывает распознавание только внутри исходного видео и не является доказательством переноса. После добавления независимых видео обычный group split автоматически сможет включить эти классы в полноценную validation.
+Локальная копия Galar находится в `D:\Dataset_galar` и содержит официальные PNG-кадры.
+Из-за недоступных архивов отсутствуют исследования 41-60; импорт намеренно использует только
+40 доступных исследований из целевого манифеста и фиксирует пропуски в итоговом JSON:
+
+```powershell
+.\.venv-win\Scripts\python.exe extract_galar_target_frames.py --frames-root "D:\Dataset_galar" --galar-root "D:\Dataset_galar" --skip-missing-studies
+```
+
+Результат импорта: 24 361 чистый кадр в `D:\dataset_quazir\galar_target_images` и объединённые
+метаданные `D:\dataset_quazir\metadata_with_galar.csv`. Исходные данные не перезаписываются.
+
+Проверка объединённого набора без запуска обучения:
+
+```powershell
+.\.venv-win\Scripts\python.exe train.py --images "D:\dataset_quazir" --metadata "D:\dataset_quazir\metadata_with_galar.csv" --output "runs\combined_galar_audit" --workers 0 --dry-run
+```
+
+Первый объединённый запуск `runs\combined_galar_v1` завершился ранней остановкой после эпохи 7.
+Лучший checkpoint выбран на эпохе 3: validation macro-F1 по всем 14 поддержанным классам равен
+`0.2961812`. Для следующего запуска используйте новый каталог результатов:
+
+```powershell
+.\.venv-win\Scripts\python.exe train.py --images "D:\dataset_quazir" --metadata "D:\dataset_quazir\metadata_with_galar.csv" --output "runs\combined_galar_v2" --epochs 15 --workers 0
+```
+
+Важно: в исходном Kvasir `ampulla_of_vater`, `blood_hematin` и `polyp` встречаются каждый только в одном видео, поэтому прежний temporal holdout оставался `diagnostic_only`. В объединённом наборе независимые Galar study/video ID позволяют обычному group split включать эти классы в полноценную video-level validation; сам split по отдельным кадрам по-прежнему запрещён.
 
 По умолчанию diagnostic holdout составляет 25% редкого эпизода с промежутком в 3 кадра. Настройки доступны через `--diagnostic-fraction` и `--diagnostic-gap-frames`; полностью отключить probe можно флагом `--no-rare-diagnostic`.
 

@@ -1,0 +1,141 @@
+{
+  "evaluation_scope": "leak_free_video_level_validation",
+  "model_selection_metric": "supported_macro_f1",
+  "supported_classes": [
+    "ampulla_of_vater",
+    "angiectasia",
+    "blood_fresh",
+    "blood_hematin",
+    "erosion",
+    "erythema",
+    "foreign_body",
+    "ileocecal_valve",
+    "lymphangiectasia",
+    "normal_clean_mucosa",
+    "polyp",
+    "pylorus",
+    "reduced_mucosal_view",
+    "ulcer"
+  ],
+  "unsupported_classes": [],
+  "class_status": {
+    "ampulla_of_vater": "evaluated_on_unseen_videos",
+    "angiectasia": "evaluated_on_unseen_videos",
+    "blood_fresh": "evaluated_on_unseen_videos",
+    "blood_hematin": "evaluated_on_unseen_videos",
+    "erosion": "evaluated_on_unseen_videos",
+    "erythema": "evaluated_on_unseen_videos",
+    "foreign_body": "evaluated_on_unseen_videos",
+    "ileocecal_valve": "evaluated_on_unseen_videos",
+    "lymphangiectasia": "evaluated_on_unseen_videos",
+    "normal_clean_mucosa": "evaluated_on_unseen_videos",
+    "polyp": "evaluated_on_unseen_videos",
+    "pylorus": "evaluated_on_unseen_videos",
+    "reduced_mucosal_view": "evaluated_on_unseen_videos",
+    "ulcer": "evaluated_on_unseen_videos"
+  },
+  "supported_classification_report": {
+    "ampulla_of_vater": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 17.0
+    },
+    "angiectasia": {
+      "precision": 0.15789473684210525,
+      "recall": 0.02097902097902098,
+      "f1-score": 0.037037037037037035,
+      "support": 143.0
+    },
+    "blood_fresh": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 22.0
+    },
+    "blood_hematin": {
+      "precision": 0.9665638494756323,
+      "recall": 0.9540859822189746,
+      "f1-score": 0.9602843834273106,
+      "support": 8211.0
+    },
+    "erosion": {
+      "precision": 0.04477611940298507,
+      "recall": 0.031413612565445025,
+      "f1-score": 0.036923076923076927,
+      "support": 191.0
+    },
+    "erythema": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 9.0
+    },
+    "foreign_body": {
+      "precision": 0.012578616352201259,
+      "recall": 0.23529411764705882,
+      "f1-score": 0.023880597014925373,
+      "support": 17.0
+    },
+    "ileocecal_valve": {
+      "precision": 0.42782834850455137,
+      "recall": 0.43691899070385126,
+      "f1-score": 0.4323258869908016,
+      "support": 753.0
+    },
+    "lymphangiectasia": {
+      "precision": 0.011235955056179775,
+      "recall": 0.05405405405405406,
+      "f1-score": 0.018604651162790697,
+      "support": 74.0
+    },
+    "normal_clean_mucosa": {
+      "precision": 0.8758437801350049,
+      "recall": 0.8212025316455697,
+      "f1-score": 0.847643490433971,
+      "support": 4424.0
+    },
+    "polyp": {
+      "precision": 0.8358369098712446,
+      "recall": 0.7730731061859081,
+      "f1-score": 0.803230795669359,
+      "support": 3023.0
+    },
+    "pylorus": {
+      "precision": 0.15261044176706828,
+      "recall": 0.5757575757575758,
+      "f1-score": 0.24126984126984127,
+      "support": 198.0
+    },
+    "reduced_mucosal_view": {
+      "precision": 0.6085271317829457,
+      "recall": 0.37922705314009664,
+      "f1-score": 0.46726190476190477,
+      "support": 828.0
+    },
+    "ulcer": {
+      "precision": 0.43333333333333335,
+      "recall": 0.2047244094488189,
+      "f1-score": 0.27807486631016043,
+      "support": 127.0
+    },
+    "accuracy": 0.8096690136940733,
+    "macro avg": {
+      "precision": 0.32335923018023227,
+      "recall": 0.32048074673902666,
+      "f1-score": 0.29618118078579847,
+      "support": 18037.0
+    },
+    "weighted avg": {
+      "precision": 0.8472232369891003,
+      "recall": 0.8096690136940733,
+      "f1-score": 0.8245655638007242,
+      "support": 18037.0
+    }
+  },
+  "supported_macro_f1": 0.29618118078579847,
+  "supported_balanced_accuracy": 0.32048074673902666,
+  "overall_accuracy": 0.8096690136940733,
+  "unsupported_class_false_positives": {},
+  "note": "Unsupported classes have no positive video in validation. Their sensitivity is not estimable; only false positives on validation negatives are reported."
+}

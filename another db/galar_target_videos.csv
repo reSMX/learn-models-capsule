@@ -1,0 +1,50 @@
+﻿source_dataset,study_id,video_id,capsule_system,gender,age,label_file,target_classes,annotation_rows,ampulla_of_vater_raw_frames,ampulla_of_vater_usable_frames,ampulla_of_vater_ambiguous_frames,ampulla_of_vater_first_frame,ampulla_of_vater_last_frame,blood_hematin_raw_frames,blood_hematin_usable_frames,blood_hematin_ambiguous_frames,blood_hematin_first_frame,blood_hematin_last_frame,polyp_raw_frames,polyp_usable_frames,polyp_ambiguous_frames,polyp_first_frame,polyp_last_frame
+Galar,1,galar_1,PillCam SB3,M,85,Labels/1.csv,polyp,27711,0,0,0,,,0,0,0,,,242,154,88,56635,58165
+Galar,4,galar_4,PillCam SB3,M,75,Labels/4.csv,polyp,4539,0,0,0,,,0,0,0,,,12,12,0,560,615
+Galar,5,galar_5,PillCam SB3,M,76,Labels/5.csv,ampulla_of_vater,7625,11,11,0,3735,4445,0,0,0,,,0,0,0,,
+Galar,6,galar_6,PillCam SB3,M,76,Labels/6.csv,blood_hematin,6078,0,0,0,,,473,466,7,110,6700,0,0,0,,
+Galar,8,galar_8,PillCam SB3,M,68,Labels/8.csv,blood_hematin,6809,0,0,0,,,1532,1532,0,26450,34105,0,0,0,,
+Galar,10,galar_10,PillCam SB3,M,63,Labels/10.csv,blood_hematin,9745,0,0,0,,,684,579,105,0,37100,0,0,0,,
+Galar,11,galar_11,PillCam SB3,M,57,Labels/11.csv,polyp,24351,0,0,0,,,0,0,0,,,152,112,40,59415,121575
+Galar,13,galar_13,PillCam SB3,M,72,Labels/13.csv,polyp,4056,0,0,0,,,0,0,0,,,110,110,0,645,4720
+Galar,14,galar_14,PillCam COLON2,M,29,Labels/14.csv,polyp,5375,0,0,0,,,0,0,0,,,75,75,0,16685,17060
+Galar,15,galar_15,PillCam COLON2,M,29,Labels/15.csv,blood_hematin|polyp,11510,0,0,0,,,126,4,122,34805,36110,870,81,789,4770,21785
+Galar,18,galar_18,PillCam SB3,M,73,Labels/18.csv,blood_hematin|polyp,12044,0,0,0,,,2,2,0,28650,28655,38,38,0,57145,57330
+Galar,19,galar_19,PillCam SB3,M,83,Labels/19.csv,polyp,29384,0,0,0,,,0,0,0,,,1003,1003,0,2685,122020
+Galar,21,galar_21,PillCam SB3,M,16,Labels/21.csv,polyp,7478,0,0,0,,,0,0,0,,,289,256,33,24690,27005
+Galar,22,galar_22,PillCam SB3,M,57,Labels/22.csv,blood_hematin,7529,0,0,0,,,16,16,0,33580,36630,0,0,0,,
+Galar,23,galar_23,PillCam SB3,M,80,Labels/23.csv,polyp,11785,0,0,0,,,0,0,0,,,4,4,0,4170,46455
+Galar,25,galar_25,PillCam SB3,M,22,Labels/25.csv,blood_hematin,22477,0,0,0,,,34,34,0,15035,25640,0,0,0,,
+Galar,26,galar_26,PillCam SB3,M,14,Labels/26.csv,ampulla_of_vater|polyp,11841,8,8,0,6335,6370,0,0,0,,,2422,2422,0,43830,59945
+Galar,28,galar_28,PillCam SB3,M,14,Labels/28.csv,ampulla_of_vater|polyp,12016,16,16,0,15900,32540,0,0,0,,,65,65,0,17205,47465
+Galar,29,galar_29,PillCam SB3,M,76,Labels/29.csv,ampulla_of_vater|polyp,16018,2,2,0,6590,6595,0,0,0,,,42,36,6,50570,75010
+Galar,30,galar_30,PillCam SB3,M,66,Labels/30.csv,blood_hematin,16953,0,0,0,,,6812,6812,0,50705,84760,1,0,1,47725,47725
+Galar,31,galar_31,PillCam SB2,M,64,Labels/31.csv,polyp,24919,0,0,0,,,0,0,0,,,69,69,0,5295,15540
+Galar,33,galar_33,PillCam SB3,M,80,Labels/33.csv,blood_hematin,13297,0,0,0,,,20,20,0,14165,19275,0,0,0,,
+Galar,34,galar_34,PillCam COLON2,M,41,Labels/34.csv,blood_hematin|polyp,10867,0,0,0,,,161,8,153,12665,44170,1,1,0,9710,9710
+Galar,35,galar_35,PillCam SB3,M,14,Labels/35.csv,blood_hematin|polyp,9643,0,0,0,,,1057,181,876,5630,47415,33,33,0,330,39440
+Galar,37,galar_37,PillCam SB3,M,17,Labels/37.csv,blood_hematin,18125,0,0,0,,,15,15,0,4225,54615,0,0,0,,
+Galar,39,galar_39,Olympus,M,82,Labels/39.csv,polyp,130776,0,0,0,,,0,0,0,,,433,433,0,13920,15471
+Galar,43,galar_43,Olympus,F,13,Labels/43.csv,ampulla_of_vater,119946,147,142,5,1755,8700,0,0,0,,,0,0,0,,
+Galar,44,galar_44,Olympus,F,14,Labels/44.csv,ampulla_of_vater,131259,1336,853,483,2964,10245,0,0,0,,,0,0,0,,
+Galar,47,galar_47,Olympus,M,18,Labels/47.csv,ampulla_of_vater|polyp,97139,4,4,0,10091,10094,0,0,0,,,849,849,0,10027,21806
+Galar,53,galar_53,Olympus,F,49,Labels/53.csv,polyp,131036,0,0,0,,,0,0,0,,,4827,2090,2737,1,49907
+Galar,54,galar_54,Olympus,M,15,Labels/54.csv,polyp,125264,0,0,0,,,0,0,0,,,4466,4462,4,9495,52935
+Galar,56,galar_56,Olympus,M,52,Labels/56.csv,polyp,130217,0,0,0,,,0,0,0,,,1411,1296,115,2264,5459
+Galar,57,galar_57,Olympus,M,62,Labels/57.csv,ampulla_of_vater|polyp,115309,216,216,0,1120,17332,0,0,0,,,446,446,0,19935,20792
+Galar,59,galar_59,Olympus,M,84,Labels/59.csv,blood_hematin,130232,0,0,0,,,10700,9654,1046,91509,111376,0,0,0,,
+Galar,60,galar_60,Olympus,M,84,Labels/60.csv,polyp,127997,0,0,0,,,0,0,0,,,17,17,0,32712,33071
+Galar,61,galar_61,PillCam SB3,M,74,Labels/61.csv,polyp,9601,0,0,0,,,0,0,0,,,21,11,10,24975,26615
+Galar,62,galar_62,PillCam SB3,M,69,Labels/62.csv,blood_hematin,4604,0,0,0,,,1159,431,728,1170,22250,0,0,0,,
+Galar,63,galar_63,PillCam SB3,M,81,Labels/63.csv,polyp,8608,0,0,0,,,0,0,0,,,2,2,0,23465,23470
+Galar,65,galar_65,PillCam SB3,F,44,Labels/65.csv,blood_hematin|polyp,14380,0,0,0,,,11,11,0,7420,9460,22,22,0,15930,45190
+Galar,67,galar_67,PillCam SB3,M,78,Labels/67.csv,blood_hematin,10543,0,0,0,,,55,55,0,11015,20570,0,0,0,,
+Galar,69,galar_69,PillCam SB3,M,77,Labels/69.csv,blood_hematin|polyp,9839,0,0,0,,,81,81,0,42810,43210,13,13,0,37225,38630
+Galar,71,galar_71,PillCam SB3,F,71,Labels/71.csv,blood_hematin,9073,0,0,0,,,939,919,20,410,44935,0,0,0,,
+Galar,73,galar_73,PillCam SB3,M,70,Labels/73.csv,polyp,5459,0,0,0,,,0,0,0,,,18,18,0,18185,27200
+Galar,74,galar_74,PillCam SB3,F,62,Labels/74.csv,blood_hematin,20018,0,0,0,,,607,462,145,1690,62040,0,0,0,,
+Galar,75,galar_75,PillCam SB3,M,81,Labels/75.csv,blood_hematin,9303,0,0,0,,,7242,7242,0,4485,40690,0,0,0,,
+Galar,77,galar_77,PillCam SB3,F,75,Labels/77.csv,polyp,20848,0,0,0,,,0,0,0,,,2,2,0,62340,62345
+Galar,78,galar_78,PillCam SB3,M,87,Labels/78.csv,polyp,16210,0,0,0,,,0,0,0,,,58,33,25,79800,80330
+Galar,79,galar_79,PillCam SB3,M,68,Labels/79.csv,blood_hematin|polyp,7674,0,0,0,,,40,40,0,23515,33315,335,335,0,16890,33180
+Galar,80,galar_80,PillCam SB3,M,71,Labels/80.csv,blood_hematin|polyp,13679,0,0,0,,,7,7,0,46200,46230,67,67,0,400,1770

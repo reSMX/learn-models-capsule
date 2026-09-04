@@ -10,6 +10,10 @@ datasets/
 *.tar.gz
 *.mp4
 
+# Large local Galar source files (keep only the filtered target manifest)
+another db/Labels/
+another db/metadata.csv
+
 # OS files
 .DS_Store
 Thumbs.db
