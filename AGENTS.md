@@ -30,7 +30,15 @@ Kvasir-Capsule 14-class frame classifier using EfficientNet-B0. `train.py` is th
   unseen-video validation.
 - `runs/combined_galar_v1` completed by early stopping after epoch 7. Its best checkpoint is epoch
   3 with supported validation macro-F1 `0.2961812`; all 14 classes have validation support, so no
-  diagnostic-only report is needed. This is the current project-best checkpoint.
+  diagnostic-only report is needed.
+- The two backbone ablations are complete. `runs/combined_galar_head_only` stopped after epoch 10
+  and is the current metric-best run at epoch 6 with validation macro-F1 `0.3021810`.
+  `runs/combined_galar_last_block` stopped after epoch 6; its best is epoch 2 with macro-F1
+  `0.2942842`, before its final 1/9 backbone block was unfrozen at `0.03x` learning rate. Neither
+  experiment produced a material improvement over `combined_galar_v1`.
+- `BEST_MODEL_DIAGNOSTICS.md` is the current human-readable model diagnostic. It records the
+  selected checkpoint, run comparison, per-class metrics, characteristic errors, data scope,
+  checkpoint SHA-256, and limitations.
 
 ## External data
 
@@ -80,6 +88,8 @@ Kvasir-Capsule 14-class frame classifier using EfficientNet-B0. `train.py` is th
 .\.venv-win\Scripts\python.exe extract_galar_target_frames.py --frames-root "D:\Dataset_galar" --galar-root "D:\Dataset_galar" --skip-missing-studies
 .\.venv-win\Scripts\python.exe train.py --images "D:\dataset_quazir" --metadata "D:\dataset_quazir\metadata_with_galar.csv" --output runs\combined_galar_audit --workers 0 --dry-run
 .\.venv-win\Scripts\python.exe train.py --images "D:\dataset_quazir" --metadata "D:\dataset_quazir\metadata_with_galar.csv" --output runs\combined_galar_v2 --epochs 15 --workers 0
+.\.venv-win\Scripts\python.exe run_experiment.py head-only
+.\.venv-win\Scripts\python.exe run_experiment.py last-block
 ```
 
 When training the combined dataset, point `--images` at `D:\dataset_quazir` so both the original

@@ -1,0 +1,141 @@
+{
+  "evaluation_scope": "leak_free_video_level_validation",
+  "model_selection_metric": "supported_macro_f1",
+  "supported_classes": [
+    "ampulla_of_vater",
+    "angiectasia",
+    "blood_fresh",
+    "blood_hematin",
+    "erosion",
+    "erythema",
+    "foreign_body",
+    "ileocecal_valve",
+    "lymphangiectasia",
+    "normal_clean_mucosa",
+    "polyp",
+    "pylorus",
+    "reduced_mucosal_view",
+    "ulcer"
+  ],
+  "unsupported_classes": [],
+  "class_status": {
+    "ampulla_of_vater": "evaluated_on_unseen_videos",
+    "angiectasia": "evaluated_on_unseen_videos",
+    "blood_fresh": "evaluated_on_unseen_videos",
+    "blood_hematin": "evaluated_on_unseen_videos",
+    "erosion": "evaluated_on_unseen_videos",
+    "erythema": "evaluated_on_unseen_videos",
+    "foreign_body": "evaluated_on_unseen_videos",
+    "ileocecal_valve": "evaluated_on_unseen_videos",
+    "lymphangiectasia": "evaluated_on_unseen_videos",
+    "normal_clean_mucosa": "evaluated_on_unseen_videos",
+    "polyp": "evaluated_on_unseen_videos",
+    "pylorus": "evaluated_on_unseen_videos",
+    "reduced_mucosal_view": "evaluated_on_unseen_videos",
+    "ulcer": "evaluated_on_unseen_videos"
+  },
+  "supported_classification_report": {
+    "ampulla_of_vater": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 17.0
+    },
+    "angiectasia": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 143.0
+    },
+    "blood_fresh": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 22.0
+    },
+    "blood_hematin": {
+      "precision": 0.9566973866935993,
+      "recall": 0.9229082937522836,
+      "f1-score": 0.9394991321596826,
+      "support": 8211.0
+    },
+    "erosion": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 191.0
+    },
+    "erythema": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 9.0
+    },
+    "foreign_body": {
+      "precision": 0.02456140350877193,
+      "recall": 0.4117647058823529,
+      "f1-score": 0.046357615894039736,
+      "support": 17.0
+    },
+    "ileocecal_valve": {
+      "precision": 0.3977455716586151,
+      "recall": 0.3280212483399734,
+      "f1-score": 0.35953420669577874,
+      "support": 753.0
+    },
+    "lymphangiectasia": {
+      "precision": 0.014084507042253521,
+      "recall": 0.0945945945945946,
+      "f1-score": 0.024518388791593695,
+      "support": 74.0
+    },
+    "normal_clean_mucosa": {
+      "precision": 0.7703284258210645,
+      "recall": 0.76876130198915,
+      "f1-score": 0.7695440660708225,
+      "support": 4424.0
+    },
+    "polyp": {
+      "precision": 0.7130353235386058,
+      "recall": 0.7545484617929209,
+      "f1-score": 0.7332047573127611,
+      "support": 3023.0
+    },
+    "pylorus": {
+      "precision": 0.3609467455621302,
+      "recall": 0.30808080808080807,
+      "f1-score": 0.33242506811989103,
+      "support": 198.0
+    },
+    "reduced_mucosal_view": {
+      "precision": 0.604075691411936,
+      "recall": 0.501207729468599,
+      "f1-score": 0.5478547854785478,
+      "support": 828.0
+    },
+    "ulcer": {
+      "precision": 0.35,
+      "recall": 0.3858267716535433,
+      "f1-score": 0.36704119850187267,
+      "support": 127.0
+    },
+    "accuracy": 0.7787326052004213,
+    "macro avg": {
+      "precision": 0.2993910753740697,
+      "recall": 0.31969385111101617,
+      "f1-score": 0.29428422993035647,
+      "support": 18037.0
+    },
+    "weighted avg": {
+      "precision": 0.7948070811099871,
+      "recall": 0.7787326052004213,
+      "f1-score": 0.7858600742791685,
+      "support": 18037.0
+    }
+  },
+  "supported_macro_f1": 0.29428422993035647,
+  "supported_balanced_accuracy": 0.31969385111101617,
+  "overall_accuracy": 0.7787326052004213,
+  "unsupported_class_false_positives": {},
+  "note": "Unsupported classes have no positive video in validation. Their sensitivity is not estimable; only false positives on validation negatives are reported."
+}

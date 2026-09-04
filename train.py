@@ -537,6 +537,33 @@ def set_trainable_backbone_blocks(model: nn.Module, trainable_blocks: int) -> in
     return len(blocks)
 
 
+def build_optimizer(
+    model: nn.Module,
+    learning_rate: float,
+    weight_decay: float,
+    backbone_lr_multiplier: float,
+    include_backbone: bool,
+) -> torch.optim.Optimizer:
+    """Build named parameter groups so a head-only run has no backbone optimizer state."""
+    groups = []
+    if include_backbone:
+        groups.append(
+            {
+                "params": model.features.parameters(),
+                "lr": learning_rate * backbone_lr_multiplier,
+                "group_name": "backbone",
+            }
+        )
+    groups.append(
+        {
+            "params": model.classifier.parameters(),
+            "lr": learning_rate,
+            "group_name": "classifier",
+        }
+    )
+    return torch.optim.AdamW(groups, weight_decay=weight_decay)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -562,6 +589,15 @@ def main() -> None:
     parser.add_argument("--sampler-max-multiplier", type=float, default=10.0)
     parser.add_argument("--val-size", type=float, default=0.2)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--backbone-strategy",
+        choices=("staged", "head-only"),
+        default="staged",
+        help=(
+            "staged freezes the pretrained backbone first and then fine-tunes its final "
+            "blocks; head-only keeps the entire pretrained backbone frozen"
+        ),
+    )
     parser.add_argument("--freeze-backbone-epochs", type=int, default=2)
     parser.add_argument("--trainable-backbone-blocks", type=int, default=3)
     parser.add_argument("--backbone-lr-multiplier", type=float, default=0.1)
@@ -604,6 +640,8 @@ def main() -> None:
         raise ValueError("sampler-max-multiplier must be at least 1")
     if args.trainable_backbone_blocks < 0:
         raise ValueError("trainable-backbone-blocks cannot be negative")
+    if args.backbone_strategy == "head-only" and args.no_pretrained:
+        raise ValueError("head-only requires a pretrained backbone")
     if not 0 < args.backbone_lr_multiplier <= 1:
         raise ValueError("backbone-lr-multiplier must be in (0, 1]")
     if not 0 <= args.dropout < 1:
@@ -829,13 +867,16 @@ def main() -> None:
     model = efficientnet_b0(weights=pretrained)
     model.classifier[0] = nn.Dropout(p=args.dropout, inplace=True)
     model.classifier[1] = nn.Linear(model.classifier[1].in_features, len(classes))
+    permanently_frozen_backbone = args.backbone_strategy == "head-only"
     freeze_backbone_epochs = 0 if args.no_pretrained else args.freeze_backbone_epochs
     total_backbone_blocks = len(list(model.features.children()))
     if args.trainable_backbone_blocks > total_backbone_blocks:
         raise ValueError(
             f"trainable-backbone-blocks cannot exceed {total_backbone_blocks} for EfficientNet-B0"
         )
-    if args.no_pretrained:
+    if permanently_frozen_backbone:
+        trainable_backbone_blocks = 0
+    elif args.no_pretrained:
         trainable_backbone_blocks = total_backbone_blocks
     elif freeze_backbone_epochs > 0:
         trainable_backbone_blocks = 0
@@ -847,15 +888,12 @@ def main() -> None:
     effective_backbone_lr_multiplier = (
         1.0 if args.no_pretrained else args.backbone_lr_multiplier
     )
-    optimizer = torch.optim.AdamW(
-        [
-            {
-                "params": model.features.parameters(),
-                "lr": args.lr * effective_backbone_lr_multiplier,
-            },
-            {"params": model.classifier.parameters(), "lr": args.lr},
-        ],
+    optimizer = build_optimizer(
+        model,
+        learning_rate=args.lr,
         weight_decay=args.weight_decay,
+        backbone_lr_multiplier=effective_backbone_lr_multiplier,
+        include_backbone=not permanently_frozen_backbone,
     )
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.epochs)
     scaler = torch.amp.GradScaler("cuda", enabled=device.type == "cuda")
@@ -863,12 +901,26 @@ def main() -> None:
     training_config = {
         "batch_size": int(args.batch_size),
         "epochs": int(args.epochs),
+        "backbone_strategy": args.backbone_strategy,
+        "backbone_frozen_for_entire_run": bool(permanently_frozen_backbone),
         "classifier_learning_rate": float(args.lr),
-        "backbone_learning_rate": float(args.lr * effective_backbone_lr_multiplier),
-        "backbone_lr_multiplier": float(effective_backbone_lr_multiplier),
-        "freeze_backbone_epochs": int(freeze_backbone_epochs),
+        "backbone_learning_rate": float(
+            0.0
+            if permanently_frozen_backbone
+            else args.lr * effective_backbone_lr_multiplier
+        ),
+        "backbone_lr_multiplier": float(
+            0.0 if permanently_frozen_backbone else effective_backbone_lr_multiplier
+        ),
+        "freeze_backbone_epochs": int(
+            args.epochs if permanently_frozen_backbone else freeze_backbone_epochs
+        ),
         "trainable_backbone_blocks_after_freeze": int(
-            total_backbone_blocks if args.no_pretrained else args.trainable_backbone_blocks
+            0
+            if permanently_frozen_backbone
+            else total_backbone_blocks
+            if args.no_pretrained
+            else args.trainable_backbone_blocks
         ),
         "total_backbone_blocks": int(total_backbone_blocks),
         "dropout": float(args.dropout),
@@ -891,13 +943,27 @@ def main() -> None:
         f"Device={device}; batch={args.batch_size}; train={len(train_df)}; val={len(val_df)}; "
         f"diagnostic={len(diagnostic_df)}; classes={len(classes)}"
     )
+    if permanently_frozen_backbone:
+        print(
+            f"Backbone strategy=head-only; all {total_backbone_blocks} backbone blocks "
+            "remain frozen for the entire run"
+        )
+    else:
+        print(
+            f"Backbone strategy=staged; freeze_epochs={freeze_backbone_epochs}; "
+            f"final_trainable_blocks={training_config['trainable_backbone_blocks_after_freeze']}"
+        )
     print(f"Validation sensitivity not estimable for: {unsupported_names}")
     best_f1 = -1.0
     best_epoch = 0
     epochs_without_improvement = 0
     history = []
     for epoch in range(1, args.epochs + 1):
-        if epoch == freeze_backbone_epochs + 1 and freeze_backbone_epochs > 0:
+        if (
+            not permanently_frozen_backbone
+            and epoch == freeze_backbone_epochs + 1
+            and freeze_backbone_epochs > 0
+        ):
             set_trainable_backbone_blocks(model, args.trainable_backbone_blocks)
             print(
                 f"Epoch {epoch}: unfroze final {args.trainable_backbone_blocks}/"
@@ -916,8 +982,11 @@ def main() -> None:
         val_loss, val_f1, truth, pred, confidence = run_epoch(
             model, val_loader, loss_fn, device, metric_labels=supported_targets
         )
-        backbone_lr = optimizer.param_groups[0]["lr"]
-        classifier_lr = optimizer.param_groups[1]["lr"]
+        current_lrs = {
+            group["group_name"]: group["lr"] for group in optimizer.param_groups
+        }
+        backbone_lr = current_lrs.get("backbone", 0.0)
+        classifier_lr = current_lrs["classifier"]
         scheduler.step()
         row = {
             "epoch": epoch,

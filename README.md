@@ -102,6 +102,39 @@ TensorBoard и локальный веб-сервер не используют�
 .\.venv-win\Scripts\python.exe train.py --images "D:\dataset_quazir" --metadata "D:\dataset_quazir\metadata_with_galar.csv" --output "runs\combined_galar_v2" --epochs 15 --workers 0
 ```
 
+### Эксперименты с заморозкой backbone
+
+Оба эксперимента используют тот же seed, video-level split и остальные настройки первого
+объединённого запуска. Записывайте их в разные новые каталоги, чтобы не перезаписать существующий
+`best.pt`.
+
+Только classifier head, весь pretrained backbone заморожен на протяжении запуска:
+
+```powershell
+.\.venv-win\Scripts\python.exe .\run_experiment.py head-only
+```
+
+Две эпохи только classifier head, затем fine-tuning последнего 1/9 блока backbone с learning rate
+`0.03x` от classifier:
+
+```powershell
+.\.venv-win\Scripts\python.exe .\run_experiment.py last-block
+```
+
+Launcher проверяет пути и не перезаписывает каталог, если в нём уже есть `best.pt` или
+`history.csv`. Для просмотра полной команды без запуска используйте `--print-command`; для
+проверки данных без обучения — `--dry-run`.
+
+В режиме `head-only` backbone не добавляется в optimizer, его BatchNorm-статистики остаются
+замороженными, а `backbone_learning_rate` в истории равен нулю. Выбор результата по-прежнему
+выполняется только по validation macro-F1; результаты нельзя сравнивать по train macro-F1.
+
+Оба эксперимента завершены. `head-only` остановился после эпохи 10; его лучший checkpoint на
+эпохе 6 получил macro-F1 `0.3021810`. Вариант с последним блоком остановился после эпохи 6 и не
+улучшил результат эпохи 2 (`0.2942842`) после разморозки. Улучшение `head-only` относительно
+`combined_galar_v1` составляет только 0.6 процентного пункта и не считается убедительным без
+повторных запусков. Полный разбор находится в [`BEST_MODEL_DIAGNOSTICS.md`](BEST_MODEL_DIAGNOSTICS.md).
+
 Важно: в исходном Kvasir `ampulla_of_vater`, `blood_hematin` и `polyp` встречаются каждый только в одном видео, поэтому прежний temporal holdout оставался `diagnostic_only`. В объединённом наборе независимые Galar study/video ID позволяют обычному group split включать эти классы в полноценную video-level validation; сам split по отдельным кадрам по-прежнему запрещён.
 
 По умолчанию diagnostic holdout составляет 25% редкого эпизода с промежутком в 3 кадра. Настройки доступны через `--diagnostic-fraction` и `--diagnostic-gap-frames`; полностью отключить probe можно флагом `--no-rare-diagnostic`.
