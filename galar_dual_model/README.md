@@ -191,6 +191,66 @@ per-class F1 scores over classes supported in unseen-study validation at the
 fixed threshold `0.5`; this is not multiclass softmax macro-F1. The checkpoint
 stores the threshold and class order needed for sigmoid inference.
 
+### Pathology imbalance experiment
+
+The weighted-BCE run remains the baseline. A follow-up Pathology experiment can
+select `--loss asymmetric`, which implements the asymmetric focal objective from
+the [ICCV 2021 paper and official implementation](https://github.com/Alibaba-MIIL/ASL).
+Its separate positive and negative focusing terms are a better match for sparse
+multi-label findings than applying large inverse-prevalence weights to every
+positive frame. The defaults (`gamma_neg=4`, `gamma_pos=1`, `clip=0.05`) follow
+the published configuration. Loss reduction is a mean so the existing learning
+rates remain on the same scale as the BCE baseline.
+
+`--initial-backbone-checkpoint` transfers only EfficientNet feature weights from
+another compatible Galar checkpoint. In particular, an Anatomy checkpoint can
+provide capsule-domain initialization while Pathology keeps a new independent
+12-label sigmoid classifier. `--initial-checkpoint` instead warm-starts the
+complete model and requires an identical task and class order. Both modes record
+their source checkpoint and epoch in `run_config.json`.
+
+The proposed first comparison is:
+
+```powershell
+.\.venv-win\Scripts\python.exe -B .\galar_dual_model\train_pathology.py --image-cache-root 'C:\Users\Maxx\Galar_256_cache' --workers 0 --batch-size 64 --ram-buffer-gb 2 --read-block-size 512 --device cuda --loss asymmetric --asymmetric-gamma-neg 4 --asymmetric-gamma-pos 1 --asymmetric-clip 0.05 --classifier-dropout 0.4 --initial-backbone-checkpoint '<anatomy-best.pt>' --output 'galar_dual_model\runs\pathology_asl_anatomy_init'
+```
+
+If that run does not beat the fixed-threshold BCE baseline, the next controlled
+comparison retains BCE but smooths the inverse-prevalence weights. Setting
+`--pos-weight-power 0.5` uses the square root of each negatives/positives ratio;
+`0` disables positive reweighting and the baseline value is `1`.
+
+```powershell
+.\.venv-win\Scripts\python.exe -B .\galar_dual_model\train_pathology.py --image-cache-root 'C:\Users\Maxx\Galar_256_cache' --workers 0 --batch-size 64 --ram-buffer-gb 2 --read-block-size 512 --device cuda --loss bce --pos-weight-power 0.5 --max-pos-weight 20 --classifier-dropout 0.4 --initial-backbone-checkpoint '<anatomy-best.pt>' --output 'galar_dual_model\runs\pathology_sqrt_bce_anatomy_init'
+```
+
+This choice is also consistent with a recent
+[Galar-specific imbalanced multi-label pipeline](https://arxiv.org/abs/2603.17879),
+which combines asymmetric focal loss with class-aware sampling, mixup, and
+per-class threshold calibration. The latter two remain possible follow-ups, not
+part of this first controlled comparison. The official
+[Galar training repository](https://github.com/EKFZ-AI-Endoscopy/GalarCapsuleML)
+also treats weighted loss/sampling, dropout, larger backbones, and study-level
+cross-validation as explicit experiment dimensions.
+
+After a run finishes, `evaluate_thresholds.py` can sweep global and per-class
+sigmoid thresholds in one validation pass. Its output is explicitly
+`diagnostic_only`: tuning and measuring on the same validation studies is
+optimistic, so the result must never select a checkpoint or be reported as an
+unbiased test score.
+
+```powershell
+.\.venv-win\Scripts\python.exe -B .\galar_dual_model\evaluate_thresholds.py --checkpoint '<run>\best.pt' --image-cache-root 'C:\Users\Maxx\Galar_256_cache' --workers 0 --device cuda
+```
+
+Loss changes cannot compensate for missing patient diversity. Classes supported
+by only one or two train/validation studies should be treated as data-limited;
+the highest-leverage follow-up is adding the currently unavailable Galar studies
+and rebuilding metadata/cache without changing the unseen-study split invariant.
+
+Training refuses to write into a non-empty output directory. Always choose a new
+run name for a follow-up or warm-start experiment.
+
 Outputs are separate:
 
 - Anatomy: `galar_dual_model/runs/anatomy/best.pt`;

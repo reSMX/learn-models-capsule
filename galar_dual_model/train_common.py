@@ -110,6 +110,12 @@ def parse_args(task: str, default_output: Path) -> argparse.Namespace:
     parser.add_argument("--head-lr", type=float, default=3e-4)
     parser.add_argument("--backbone-lr", type=float, default=3e-5)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
+    parser.add_argument(
+        "--classifier-dropout",
+        type=float,
+        default=0.2,
+        help="Dropout probability before the EfficientNet classifier",
+    )
     parser.add_argument("--freeze-backbone-epochs", type=int, default=2)
     parser.add_argument(
         "--unfreeze-stages-per-epoch",
@@ -128,6 +134,38 @@ def parse_args(task: str, default_output: Path) -> argparse.Namespace:
         type=float,
         default=100.0,
         help="Cap for BCE positive weights derived from training prevalence",
+    )
+    parser.add_argument(
+        "--pos-weight-power",
+        type=float,
+        default=1.0,
+        help=(
+            "Exponent applied to the BCE negatives/positives ratio; "
+            "0.5 provides square-root smoothing and 0 disables reweighting"
+        ),
+    )
+    parser.add_argument(
+        "--loss",
+        choices=("bce", "asymmetric"),
+        default="bce",
+        help="Multi-label objective; asymmetric loss targets positive/negative imbalance",
+    )
+    parser.add_argument("--asymmetric-gamma-neg", type=float, default=4.0)
+    parser.add_argument("--asymmetric-gamma-pos", type=float, default=1.0)
+    parser.add_argument("--asymmetric-clip", type=float, default=0.05)
+    initialization = parser.add_mutually_exclusive_group()
+    initialization.add_argument(
+        "--initial-checkpoint",
+        type=Path,
+        help="Warm-start the complete model from a same-task Galar checkpoint",
+    )
+    initialization.add_argument(
+        "--initial-backbone-checkpoint",
+        type=Path,
+        help=(
+            "Warm-start only EfficientNet features from any compatible Galar "
+            "checkpoint, such as the Anatomy model for Pathology training"
+        ),
     )
     parser.add_argument("--gradient-clip", type=float, default=1.0)
     parser.add_argument("--no-pretrained", action="store_true")
@@ -157,6 +195,14 @@ def parse_args(task: str, default_output: Path) -> argparse.Namespace:
         parser.error("threshold must be between 0 and 1")
     if args.max_pos_weight < 1.0 or args.gradient_clip < 0:
         parser.error("max-pos-weight must be >= 1 and gradient-clip cannot be negative")
+    if not 0.0 <= args.pos_weight_power <= 1.0:
+        parser.error("pos-weight-power must be in [0, 1]")
+    if not 0.0 <= args.classifier_dropout < 1.0:
+        parser.error("classifier-dropout must be in [0, 1)")
+    if args.asymmetric_gamma_neg < 0 or args.asymmetric_gamma_pos < 0:
+        parser.error("asymmetric gamma values cannot be negative")
+    if not 0.0 <= args.asymmetric_clip < 1.0:
+        parser.error("asymmetric-clip must be in [0, 1)")
     if args.dry_run_samples < 1:
         parser.error("dry-run-samples must be positive")
     return args
@@ -267,11 +313,62 @@ def build_transforms() -> tuple[v2.Compose, v2.Compose]:
     return train_transform, validation_transform
 
 
-def build_model(class_count: int, pretrained: bool) -> nn.Module:
+def build_model(
+    class_count: int, pretrained: bool, classifier_dropout: float = 0.2
+) -> nn.Module:
     model = efficientnet_b0(weights=EfficientNet_B0_Weights.DEFAULT if pretrained else None)
     input_features = model.classifier[1].in_features
+    model.classifier[0].p = classifier_dropout
     model.classifier[1] = nn.Linear(input_features, class_count)
     return model
+
+
+def load_initial_checkpoint(
+    model: nn.Module,
+    path: Path,
+    task: str,
+    classes: list[str],
+    *,
+    backbone_only: bool,
+) -> dict[str, Any]:
+    """Load trusted local weights while validating task and architecture metadata."""
+
+    resolved = path.resolve()
+    if not resolved.is_file():
+        raise FileNotFoundError(f"Initial checkpoint not found: {resolved}")
+    checkpoint = torch.load(resolved, map_location="cpu", weights_only=True)
+    if not isinstance(checkpoint, dict) or not isinstance(checkpoint.get("model"), dict):
+        raise ValueError(f"Unsupported Galar checkpoint format: {resolved}")
+
+    state = checkpoint["model"]
+    if backbone_only:
+        feature_state = {
+            key: value for key, value in state.items() if key.startswith("features.")
+        }
+        if not feature_state:
+            raise ValueError(f"Checkpoint has no EfficientNet feature weights: {resolved}")
+        incompatible = model.load_state_dict(feature_state, strict=False)
+        if incompatible.unexpected_keys or any(
+            not key.startswith("classifier.") for key in incompatible.missing_keys
+        ):
+            raise ValueError(f"Incompatible EfficientNet backbone checkpoint: {resolved}")
+        mode = "backbone"
+    else:
+        if checkpoint.get("task") != task:
+            raise ValueError(
+                f"Checkpoint task {checkpoint.get('task')!r} does not match {task!r}"
+            )
+        if list(checkpoint.get("classes", ())) != classes:
+            raise ValueError("Checkpoint class order does not match current task metadata")
+        model.load_state_dict(state, strict=True)
+        mode = "complete_model"
+
+    return {
+        "mode": mode,
+        "checkpoint": str(resolved),
+        "source_task": checkpoint.get("task"),
+        "source_epoch": checkpoint.get("epoch"),
+    }
 
 
 def set_trainable_backbone_stages(model: nn.Module, trainable_stages: int) -> int:
@@ -311,7 +408,9 @@ def build_optimizer(model: nn.Module, args: argparse.Namespace):
     return torch.optim.AdamW(groups, weight_decay=args.weight_decay)
 
 
-def positive_weights(config: dict[str, Any], classes: list[str], cap: float) -> torch.Tensor:
+def positive_weights(
+    config: dict[str, Any], classes: list[str], cap: float, power: float = 1.0
+) -> torch.Tensor:
     total = int(config["train"]["frames"])
     counts = config["train"]["class_frame_counts"]
     weights: list[float] = []
@@ -319,9 +418,50 @@ def positive_weights(config: dict[str, Any], classes: list[str], cap: float) -> 
         positive = int(counts[label])
         if positive <= 0:
             raise ValueError(f"Training split has no positive frames for {label!r}")
-        ratio = (total - positive) / positive
+        ratio = ((total - positive) / positive) ** power
         weights.append(min(cap, max(1.0, ratio)))
     return torch.tensor(weights, dtype=torch.float32)
+
+
+class AsymmetricLoss(nn.Module):
+    """Asymmetric focal objective for imbalanced multi-label classification."""
+
+    def __init__(
+        self,
+        gamma_neg: float = 4.0,
+        gamma_pos: float = 1.0,
+        clip: float = 0.05,
+        eps: float = 1e-8,
+    ) -> None:
+        super().__init__()
+        self.gamma_neg = gamma_neg
+        self.gamma_pos = gamma_pos
+        self.clip = clip
+        self.eps = eps
+
+    def forward(self, logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+        positive_probability = torch.sigmoid(logits)
+        negative_probability = 1.0 - positive_probability
+        if self.clip > 0:
+            negative_probability = (negative_probability + self.clip).clamp(max=1.0)
+
+        loss = targets * torch.log(positive_probability.clamp(min=self.eps))
+        loss += (1.0 - targets) * torch.log(
+            negative_probability.clamp(min=self.eps)
+        )
+        if self.gamma_neg > 0 or self.gamma_pos > 0:
+            with torch.no_grad():
+                probability = (
+                    positive_probability * targets
+                    + negative_probability * (1.0 - targets)
+                )
+                gamma = (
+                    self.gamma_pos * targets
+                    + self.gamma_neg * (1.0 - targets)
+                )
+                weight = torch.pow(1.0 - probability, gamma)
+            loss *= weight
+        return -loss.mean()
 
 
 class LocalityBlockSampler(Sampler[int]):
@@ -674,6 +814,11 @@ def write_history(output: Path, history: list[dict[str, Any]]) -> None:
 
 def run_training(task: str, default_output: Path) -> None:
     args = parse_args(task, default_output)
+    output = args.output.resolve()
+    if not args.dry_run and output.exists() and any(output.iterdir()):
+        raise FileExistsError(
+            f"Refusing to overwrite non-empty Galar run directory: {output}"
+        )
     seed_everything(args.seed)
     device = resolve_device(args.device)
     metadata_dir = args.metadata_dir.resolve()
@@ -785,8 +930,23 @@ def run_training(task: str, default_output: Path) -> None:
         train_phase_loader = train_loader
         validation_phase_loader = validation_loader
 
-    pretrained = not args.no_pretrained and not args.dry_run
-    model = build_model(len(classes), pretrained=pretrained).to(device)
+    initial_path = args.initial_checkpoint or args.initial_backbone_checkpoint
+    pretrained = not args.no_pretrained and not args.dry_run and initial_path is None
+    model = build_model(
+        len(classes),
+        pretrained=pretrained,
+        classifier_dropout=args.classifier_dropout,
+    )
+    initialization_details = None
+    if initial_path is not None:
+        initialization_details = load_initial_checkpoint(
+            model,
+            initial_path,
+            task,
+            classes,
+            backbone_only=args.initial_backbone_checkpoint is not None,
+        )
+    model = model.to(device)
     if device.type == "cuda":
         model = model.to(memory_format=torch.channels_last)
     total_backbone_stages = set_trainable_backbone_stages(model, 0)
@@ -795,8 +955,32 @@ def run_training(task: str, default_output: Path) -> None:
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer, mode="max", factor=0.5, patience=2
     )
-    pos_weight = positive_weights(config, classes, args.max_pos_weight).to(device)
-    loss_fn = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+    if args.loss == "bce":
+        pos_weight = positive_weights(
+            config, classes, args.max_pos_weight, args.pos_weight_power
+        ).to(device)
+        loss_fn: nn.Module = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+        loss_parameters = {
+            "max_pos_weight": args.max_pos_weight,
+            "pos_weight_power": args.pos_weight_power,
+            "pos_weight": {
+                label: float(value)
+                for label, value in zip(classes, pos_weight.cpu(), strict=True)
+            },
+        }
+    else:
+        pos_weight = None
+        loss_fn = AsymmetricLoss(
+            gamma_neg=args.asymmetric_gamma_neg,
+            gamma_pos=args.asymmetric_gamma_pos,
+            clip=args.asymmetric_clip,
+        )
+        loss_parameters = {
+            "gamma_neg": args.asymmetric_gamma_neg,
+            "gamma_pos": args.asymmetric_gamma_pos,
+            "clip": args.asymmetric_clip,
+            "reduction": "mean",
+        }
     amp_enabled = device.type == "cuda" and not args.no_amp
     scaler = torch.amp.GradScaler("cuda", enabled=amp_enabled)
 
@@ -804,7 +988,8 @@ def run_training(task: str, default_output: Path) -> None:
         f"Task={task}; classes={len(classes)}; device={device}; "
         f"train={len(train_dataset)}; validation={len(validation_dataset)}; "
         f"batch_size={args.batch_size}; workers={args.workers}; "
-        f"AMP={amp_enabled}; pretrained={pretrained}"
+        f"AMP={amp_enabled}; pretrained={pretrained}; loss={args.loss}; "
+        f"classifier_dropout={args.classifier_dropout}"
     )
     if cache_manifest is not None:
         settings = cache_manifest["settings"]
@@ -816,13 +1001,28 @@ def run_training(task: str, default_output: Path) -> None:
     else:
         print(f"Image source=original PNG files at {args.galar_root.resolve()}")
     print("Classes:", ", ".join(classes))
-    print(
-        "BCE pos_weight:",
-        ", ".join(
-            f"{label}={weight:.3g}"
-            for label, weight in zip(classes, pos_weight.cpu().tolist(), strict=True)
-        ),
-    )
+    if initialization_details is not None:
+        print(
+            f"Initialization={initialization_details['mode']} from "
+            f"{initialization_details['checkpoint']}"
+        )
+    if pos_weight is not None:
+        print(
+            "BCE pos_weight:",
+            ", ".join(
+                f"{label}={weight:.3g}"
+                for label, weight in zip(
+                    classes, pos_weight.cpu().tolist(), strict=True
+                )
+            ),
+        )
+    else:
+        print(
+            "Asymmetric loss: "
+            f"gamma_neg={args.asymmetric_gamma_neg:g}; "
+            f"gamma_pos={args.asymmetric_gamma_pos:g}; "
+            f"clip={args.asymmetric_clip:g}"
+        )
 
     if args.dry_run:
         train_metrics = run_epoch(
@@ -855,21 +1055,20 @@ def run_training(task: str, default_output: Path) -> None:
         )
         return
 
-    output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     run_config = {
         "task": task,
         "problem_type": "multi_label",
         "classes": classes,
         "activation": "sigmoid",
-        "loss": "BCEWithLogitsLoss",
+        "loss": "BCEWithLogitsLoss" if args.loss == "bce" else "AsymmetricLoss",
+        "loss_parameters": loss_parameters,
         "validation_threshold": args.threshold,
         "model_selection_metric": "validation_supported_macro_f1_at_fixed_threshold",
         "backbone_stage_count": total_backbone_stages,
-        "pos_weight": {
-            label: float(value)
-            for label, value in zip(classes, pos_weight.cpu(), strict=True)
-        },
+        "initialization": initialization_details,
+        "classifier_dropout": args.classifier_dropout,
+        "pos_weight": loss_parameters.get("pos_weight"),
         "arguments": {
             key: str(value) if isinstance(value, Path) else value
             for key, value in vars(args).items()
