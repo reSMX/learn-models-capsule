@@ -15,7 +15,8 @@ change training, datasets, checkpoints, or split policy to support the web app.
 
 Read only what is relevant to the current web task:
 
-- root `AGENTS.md` — repository-wide invariants and working-tree safety;
+- local root `AGENTS.md`, when available — repository-wide invariants and
+  working-tree safety; this local file is intentionally excluded from Git;
 - `galar_dual_model/README.md` — task definitions, training outputs, and known
   limitations;
 - `galar_dual_model/labels.py` — exact Anatomy, Pathology, and technical label

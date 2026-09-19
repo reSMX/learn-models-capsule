@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 .idea/
 
+# Локальные инструкции и рабочие заметки (оставлять только на этом компьютере)
+/AGENTS.md
+/пояснение.txt
+
 # Local datasets and downloaded archives
 data/
 datasets/
