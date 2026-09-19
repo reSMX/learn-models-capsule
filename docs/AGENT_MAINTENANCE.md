@@ -44,7 +44,7 @@ Examples:
 - never overwrite completed experiment runs;
 - do not start training without explicit user instruction;
 - `train.py` is the source of truth for training behavior;
-- web requirements live in `agent_web.md`;
+- web requirements live in `web_demo/AGENTS.md`;
 - local datasets must remain outside Git.
 
 ## What does not belong in AGENTS.md
@@ -76,7 +76,7 @@ Do not maintain the same fact in multiple places.
 
 Prefer:
 
-> `BEST_MODEL_DIAGNOSTICS.md` is the source of truth for current model metrics and limitations.
+> `docs/legacy/BEST_MODEL_DIAGNOSTICS.md` is the source of truth for the established 14-class model metrics and limitations.
 
 over copying its metric tables into `AGENTS.md`.
 
@@ -88,7 +88,7 @@ over duplicating batch size, dropout, learning rate, weight decay, or augmentati
 
 Prefer:
 
-> Read `EXTERNAL_DATASETS.md` for current dataset import rules and inventory.
+> Read `docs/legacy/EXTERNAL_DATASETS.md` for the established 14-class dataset import rules and inventory.
 
 over reproducing the complete Galar state in the root file.
 
@@ -102,9 +102,9 @@ When linking a document from `AGENTS.md`, state when it is relevant.
 
 Good:
 
-- `agent_web.md` — read for web/API/UI tasks.
-- `BEST_MODEL_DIAGNOSTICS.md` — read for evaluation or checkpoint decisions.
-- `EXTERNAL_DATASETS.md` — read for dataset import or metadata tasks.
+- `web_demo/AGENTS.md` — read for web/API/UI tasks.
+- `docs/legacy/BEST_MODEL_DIAGNOSTICS.md` — read for established 14-class evaluation or checkpoint decisions.
+- `docs/legacy/EXTERNAL_DATASETS.md` — read for its historical dataset import or metadata tasks.
 
 Bad:
 

@@ -9,6 +9,7 @@ datasets/
 *.zip
 *.tar.gz
 *.mp4
+*_pathology_frames/
 
 # Large local Galar source files (keep only the filtered target manifest)
 another db/Labels/

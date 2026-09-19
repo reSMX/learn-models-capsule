@@ -40,6 +40,18 @@ PATHOLOGY_CANDIDATE_LABELS = (
     "lymphangioectasis",
 )
 
+ZERO_SUPPORT_PATHOLOGY_LABELS = (
+    "esophagitis",
+    "varices",
+    "celiac",
+)
+
+PATHOLOGY_LABELS = tuple(
+    label
+    for label in PATHOLOGY_CANDIDATE_LABELS
+    if label not in ZERO_SUPPORT_PATHOLOGY_LABELS
+)
+
 TECHNICAL_LABELS = (
     "bubbles",
     "dirt",

@@ -8,7 +8,7 @@ from pathlib import Path
 
 # Keep the user-facing junction path on Windows. Path.resolve() follows this workspace's
 # junction to a Cyrillic directory name, which some PowerShell encodings display incorrectly.
-PROJECT_ROOT = Path(__file__).absolute().parent
+PROJECT_ROOT = Path(__file__).absolute().parents[1]
 IMAGES = Path(r"D:\dataset_quazir")
 METADATA = Path(r"D:\dataset_quazir\metadata_with_galar.csv")
 
@@ -73,7 +73,7 @@ def main() -> int:
 
     completed_artifacts = [output / "best.pt", output / "history.csv"]
     existing_completed = [path for path in completed_artifacts if path.exists()]
-    if existing_completed and not args.dry_run:
+    if existing_completed and not args.dry_run and not args.print_command:
         parser.error(
             "refusing to overwrite an existing training run; choose --output with a new "
             f"directory (found: {', '.join(str(path) for path in existing_completed)})"

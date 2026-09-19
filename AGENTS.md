@@ -14,9 +14,9 @@ Use `--workers 0` for Windows training/data-loader workflows unless the relevant
 
 Read additional documentation only when it is relevant to the current task.
 
-- `agent_web.md` — web MVP requirements, API contract, UI behavior, tests, and safety wording. Read for web/API/UI/inference-demo tasks.
-- `BEST_MODEL_DIAGNOSTICS.md` — selected checkpoint, model comparisons, per-class metrics, characteristic errors, and known limitations. Read for model evaluation, checkpoint decisions, or claims about model quality.
-- `EXTERNAL_DATASETS.md` — external dataset sources, mappings, import rules, and provenance requirements. Read for dataset import, metadata, Galar, Capsule Vision, SEE-AI, or KID tasks.
+- `web_demo/AGENTS.md` — dual-model web MVP scope, API contract, UI behavior, tests, and safety wording. Read for web/API/UI/inference-demo tasks.
+- `docs/legacy/BEST_MODEL_DIAGNOSTICS.md` — selected checkpoint, model comparisons, per-class metrics, characteristic errors, and known limitations for the established 14-class model. Read for its evaluation, checkpoint decisions, or quality claims.
+- `docs/legacy/EXTERNAL_DATASETS.md` — external dataset sources, mappings, import rules, and provenance requirements for the established 14-class model. Read for its historical dataset import or provenance tasks.
 - `train.py` — source of truth for the established 14-class training pipeline and hyperparameters.
 - `galar_dual_model/README.md` — Galar dual-model task definitions, metadata/cache workflows, training commands, outputs, and limitations. Read for Anatomy/Pathology training or Galar dual-model operations.
 - `galar_dual_model/labels.py` — source of truth for the Galar Anatomy, Pathology, technical, and zero-support label groups.
@@ -42,9 +42,9 @@ Do not preload these documents when they are unrelated to the current task.
 
 ## Current priority
 
-The active workstream is the isolated Galar dual-model pipeline. The web MVP is
-postponed: do not work on `agent_web.md`, frontend code, or web MVP tasks unless
-the user explicitly resumes that workstream.
+The active workstream is the local Galar dual-model web MVP. Keep its code and
+scoped instructions under `web_demo/`; do not merge web behavior into the
+established `train.py` pipeline.
 
 The user-authorized Anatomy and Pathology experiments are complete, and no
 dual-model training process is currently active. Anatomy did not satisfy its
@@ -62,9 +62,10 @@ interrupted, or completed Galar run; use a new output directory. Use
 explicitly requests multiprocessing after available commit/pagefile capacity
 has been verified.
 
-Keep all new dual-model implementation inside `galar_dual_model/`. Reuse ideas
-from the established pipeline where useful, but do not modify old experiment
-runs or the established pipeline merely to support the dual-model work.
+Keep all new dual-model training and data implementation inside
+`galar_dual_model/`. Reuse ideas from the established pipeline where useful,
+but do not modify old experiment runs or the established pipeline merely to
+support the dual-model work.
 
 The current Galar baseline uses EfficientNet-B0 transfer learning. Exact
 augmentation, staged freeze/unfreeze, optimizer, loss, early-stopping, and
@@ -75,23 +76,26 @@ The local SSD image cache, generated metadata, and model outputs are runtime
 artifacts. They must remain outside Git, and training from the cache must not
 require the original dataset drive once cache coverage has been validated.
 
-The local web MVP remains deferred, but its default inference checkpoint is:
+The local web MVP uses two independent default inference checkpoints:
 
-`runs/combined_galar_head_only/best.pt`
+- Anatomy: `galar_dual_model/runs/anatomy_workers0_20260907/best.pt`;
+- Pathology: `galar_dual_model/runs/pathology/best.pt`.
 
-This is the formal metric-best checkpoint currently selected for the demo.
+The Pathology follow-up runs did not replace the fixed-threshold baseline.
 
 The web MVP must not require either local dataset at runtime. Only the checkpoint and required report/config artifacts may be runtime dependencies.
 
 ## Web/model safety
 
-For web behavior and wording, follow `agent_web.md` and `BEST_MODEL_DIAGNOSTICS.md`.
+For dual-model web behavior and wording, follow `web_demo/AGENTS.md`. Use
+`docs/legacy/BEST_MODEL_DIAGNOSTICS.md` only when the established 14-class
+checkpoint is in scope.
 
 At minimum:
 
-- call softmax outputs "model scores", not diagnostic probabilities;
-- show the top-3 model outputs;
-- clearly state that the frame classifier is a research prototype without temporal context;
+- call sigmoid outputs "model scores", not diagnostic probabilities;
+- show threshold-positive labels and the top-3 scores separately for each model;
+- clearly state that both multi-label frame classifiers are research prototypes without temporal context;
 - do not hide, soften, or overstate known model limitations;
 - do not present model output as a medical diagnosis.
 
@@ -147,7 +151,7 @@ For Python commands on Windows, prefer the project environment:
 
 `.\\.venv-win\\Scripts\\python.exe`
 
-For web-specific validation, follow `agent_web.md`.
+For web-specific validation, follow `web_demo/AGENTS.md`.
 
 For Galar dual-model validation, start with import/compile checks and the
 documented `--dry-run` workflow. A dry run must use a separate or non-writing

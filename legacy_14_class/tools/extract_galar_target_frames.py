@@ -1,7 +1,7 @@
 """Import clean target frames from Galar videos or official PNG folders.
 
 This script is intentionally separate from training.  It uses the video list
-created by ``select_galar_target_videos.py``, reads the corresponding Galar
+created by ``legacy_14_class.tools.select_galar_target_videos``, reads the corresponding Galar
 ``Labels/*.csv`` files, and extracts only frames for these mappings:
 
 * ``ampulla of vater`` -> ``Ampulla of Vater``
@@ -18,8 +18,8 @@ No OpenCV dependency is required.
 
 Example to run after the selected videos have been downloaded::
 
-    python -B extract_galar_target_frames.py --videos "D:\\Galar\\Videos"
-    python -B extract_galar_target_frames.py --frames-root "D:\\Dataset_galar" \
+    python -B -m legacy_14_class.tools.extract_galar_target_frames --videos "D:\\Galar\\Videos"
+    python -B -m legacy_14_class.tools.extract_galar_target_frames --frames-root "D:\\Dataset_galar" \
         --galar-root "D:\\Dataset_galar" --skip-missing-studies
 
 Use ``--video-map`` if the downloaded filenames are not ``1.mp4``, ``2.mp4``,
@@ -40,7 +40,7 @@ from typing import Iterable
 
 from PIL import Image
 
-from select_galar_target_videos import (
+from legacy_14_class.tools.select_galar_target_videos import (
     OTHER_PATHOLOGY_COLUMNS,
     TARGET_COLUMNS,
     is_positive,
@@ -141,7 +141,10 @@ def parse_args() -> argparse.Namespace:
         "--selection-manifest",
         type=Path,
         default=Path("another db/galar_target_videos.csv"),
-        help="Video manifest created by select_galar_target_videos.py",
+        help=(
+            "Video manifest created by "
+            "legacy_14_class.tools.select_galar_target_videos"
+        ),
     )
     parser.add_argument(
         "--video-map",
@@ -436,7 +439,8 @@ def validate_manifest_counts(studies: list[Study], records: list[FrameRecord]) -
             if actual != expected:
                 raise ValueError(
                     f"Selection manifest drift for study {study.study_id}, {target}: "
-                    f"manifest={expected}, labels={actual}. Re-run select_galar_target_videos.py."
+                    f"manifest={expected}, labels={actual}. Re-run "
+                    "legacy_14_class.tools.select_galar_target_videos."
                 )
 
 
